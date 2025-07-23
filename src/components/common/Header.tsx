@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -10,7 +11,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { signInRoute, signUpRoute, storefrontRoute } from "@/lib/routeHelpers";
+import {
+  dashboardRoute,
+  signInRoute,
+  signUpRoute,
+  storefrontRoute,
+} from "@/lib/routeHelpers";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -21,6 +29,8 @@ const navigationLinks = [
 ];
 
 export function Header() {
+  const user = useQuery(api.user.currentUser);
+
   return (
     <header className="border-b px-4 md:px-6 fixed w-full">
       <div className="flex h-16 items-center justify-between gap-4">
@@ -104,11 +114,15 @@ export function Header() {
         </div>
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="text-sm">
-            <a href={signInRoute()}>Sign In</a>
-          </Button>
+          {user ? null : (
+            <Button asChild variant="ghost" size="sm" className="text-sm">
+              <a href={signInRoute()}>Sign In</a>
+            </Button>
+          )}
           <Button asChild size="sm" className="text-sm">
-            <a href={signUpRoute()}>Get Started</a>
+            <a href={user ? dashboardRoute() : signUpRoute()}>
+              {user ? "Dashboard" : "Get Started"}
+            </a>
           </Button>
         </div>
       </div>

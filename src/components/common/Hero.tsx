@@ -3,7 +3,7 @@ import React from "react";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { freeInvoiceGeneratorRoute } from "@/lib/routeHelpers";
+import { dashboardRoute } from "@/lib/routeHelpers";
 
 const reviews = {
   count: 200,
@@ -47,7 +47,7 @@ export const Hero = () => (
         </p>
       </div>
       <Button asChild size="lg" className="mt-10">
-        <a href={freeInvoiceGeneratorRoute()}>Create Invoice</a>
+        <a href={dashboardRoute()}>Create Invoice</a>
       </Button>
       <div className="mx-auto mt-10 flex w-fit flex-col items-center gap-4 sm:flex-row">
         <span className="mx-4 inline-flex items-center -space-x-4">

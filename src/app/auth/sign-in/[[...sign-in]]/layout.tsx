@@ -1,5 +1,6 @@
 "use client";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { signUpRoute } from "@/lib/routeHelpers";
 import { cn } from "@/lib/utils";
 import { ArrowLeftIcon } from "lucide-react";
 import { Metadata } from "next";
@@ -12,17 +13,16 @@ export default function AuthenticationPage({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isSignIn = pathname.includes("/sign-in");
   return (
     <div className="relative container flex-1 shrink-0 items-center justify-center grid grid-cols-1 max-w-none lg:grid-cols-2 h-screen">
       <Link
-        href={isSignIn ? "/auth/sign-up" : "/auth/sign-in"}
+        href={signUpRoute()}
         className={cn(
           buttonVariants({ variant: "ghost" }),
           "absolute top-4 right-4 md:top-8 md:right-8 hidden lg:block"
         )}
       >
-        {isSignIn ? "Sign Up" : "Sign In"}
+        Sign Up
       </Link>
       <div className="text-primary relative hidden h-full flex-col p-10 lg:flex dark:border-r">
         <div className="bg-primary/5 absolute inset-0" />

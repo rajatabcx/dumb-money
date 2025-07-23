@@ -1,4 +1,5 @@
 export const signInRoute = () => "/auth/sign-in";
 export const signUpRoute = () => "/auth/sign-up";
 export const storefrontRoute = () => "/";
-export const freeInvoiceGeneratorRoute = () => "/free-invoice-generator";
+export const dashboardRoute = () => "/dashboard";
+export const invoiceRoute = () => "/dashboard/invoice";
