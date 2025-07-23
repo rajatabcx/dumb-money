@@ -1,6 +1,6 @@
-import { InvoiceSearchFilter } from "@/components/invoice-search-filter";
 import { InvoiceColumnVisibility } from "./InvoiceColumnVisibility";
-import { OpenInvoiceSheet } from "./open-invoice-sheet";
+import { InvoiceSearchFilter } from "./InvoiceSearchFilter";
+import { OpenInvoiceSheet } from "./OpenInvoiceSheet";
 
 export function InvoiceHeader() {
   return (

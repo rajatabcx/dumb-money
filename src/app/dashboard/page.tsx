@@ -1,7 +1,8 @@
-import React from "react";
+import { invoiceRoute } from "@/lib/routeHelpers";
+import { redirect } from "next/navigation";
 
 const page = () => {
-  return <div>THi page is here just for testing nothing else</div>;
+  redirect(invoiceRoute());
 };
 
 export default page;

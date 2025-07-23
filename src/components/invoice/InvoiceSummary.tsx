@@ -4,10 +4,10 @@ import { useTeamQuery } from "@/hooks/use-team";
 import { useI18n } from "@/locales/client";
 import type { RouterOutputs } from "@api/trpc/routers/_app";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/components/ui/cn";
+import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
-import { AnimatedNumber } from "./animated-number";
+import { AnimatedNumber } from "../common/AnimatedNumber";
 
 type Props = {
   data: RouterOutputs["invoice"]["invoiceSummary"];

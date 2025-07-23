@@ -1,12 +1,9 @@
 "use client";
 
-import { useInvoiceFilterParams } from "@/hooks/use-invoice-filter-params";
-import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useInvoiceFilterParams } from "@/hooks/useInvoiceFilterParams";
 import { InvoiceSummary } from "./InvoiceSummary";
 
 export function InvoicesOpen() {
-  const trpc = useTRPC();
   const { data } = useSuspenseQuery(
     trpc.invoice.invoiceSummary.queryOptions({
       status: "unpaid",
