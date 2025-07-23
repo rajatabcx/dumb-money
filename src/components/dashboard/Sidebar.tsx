@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { MainMenu } from "./MainMenu";
-import { TeamDetails } from "./TeamDetails";
+import { CompanyDetails } from "./CompanyDetails";
 import { cn } from "@/lib/utils";
 import { LayoutDashboard } from "lucide-react";
 
@@ -35,7 +35,7 @@ export function Sidebar() {
         <MainMenu isExpanded={isExpanded} />
       </div>
 
-      <TeamDetails isExpanded={isExpanded} />
+      <CompanyDetails isExpanded={isExpanded} />
     </aside>
   );
 }

@@ -15,11 +15,12 @@ import {
   Settings,
   Timer,
 } from "lucide-react";
+import { invoiceRoute } from "@/lib/routeHelpers";
 
 const icons = {
   "/": () => <ChartNoAxesCombined className="size-5" />,
   "/transactions": () => <NotepadText className="size-5" />,
-  "/invoices": () => <FileText className="size-5" />,
+  [invoiceRoute()]: () => <FileText className="size-5" />,
   "/tracker": () => <Timer className="size-5" />,
   "/customers": () => <CircleDotDashed className="size-5" />,
   "/vault": () => <Briefcase className="size-5" />,
@@ -57,14 +58,14 @@ const items = [
   //   ],
   // },
   {
-    path: "/invoices",
+    path: invoiceRoute(),
     name: "Invoices",
     children: [
-      { path: "/invoices?statuses=paid", name: "Paid" },
-      { path: "/invoices?statuses=unpaid", name: "Unpaid" },
-      { path: "/invoices?statuses=overdue", name: "Overdue" },
-      { path: "/invoices?statuses=draft", name: "Draft" },
-      { path: "/invoices?type=create", name: "Create new" },
+      { path: `${invoiceRoute()}?statuses=paid`, name: "Paid" },
+      { path: `${invoiceRoute()}?statuses=unpaid`, name: "Unpaid" },
+      { path: `${invoiceRoute()}?statuses=overdue`, name: "Overdue" },
+      { path: `${invoiceRoute()}?statuses=draft`, name: "Draft" },
+      { path: `${invoiceRoute()}?type=create`, name: "Create new" },
     ],
   },
   // {

@@ -4,10 +4,9 @@ import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import { api } from "../../../../../convex/_generated/api";
 import { getAuthToken } from "@/lib/auth";
-import { invoiceRoute } from "@/lib/routeHelpers";
+import { invoiceRoute, onboardingRoute } from "@/lib/routeHelpers";
 
 export async function GET(request: NextRequest) {
-  console.log("callback");
   const user = await currentUser();
   const searchParams = new URL(request.url).searchParams;
   const redirectUrl = searchParams.get("redirect_url");
@@ -16,12 +15,14 @@ export async function GET(request: NextRequest) {
   }
 
   const convexUser = await fetchQuery(api.user.currentUser, {});
-  if (convexUser?.isOnboarded) {
+  // if user is onboarded, redirect to invoice route
+  if (!!convexUser && convexUser.isOnboarded) {
     return NextResponse.redirect(
       new URL(redirectUrl ?? invoiceRoute(), request.url)
     );
   }
 
+  // if user is not onboarded, redirect to onboarding route
   const token = await getAuthToken();
   await fetchMutation(
     api.user.upsertUser,
@@ -35,9 +36,6 @@ export async function GET(request: NextRequest) {
     },
     { token }
   );
-  //   create onboard routes
 
-  return NextResponse.redirect(
-    new URL(redirectUrl ?? invoiceRoute(), request.url)
-  );
+  return NextResponse.redirect(new URL(onboardingRoute(), request.url));
 }

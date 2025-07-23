@@ -1,5 +1,7 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { ConvexError, v } from "convex/values";
+import { internalQuery, mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { getCurrentUser } from "./useHelper";
 
 export const upsertUser = mutation({
   args: {
@@ -17,10 +19,7 @@ export const upsertUser = mutation({
     companyId: v.optional(v.id("company")),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
-      .first();
+    const user = await getCurrentUser(ctx);
 
     if (user) {
       await ctx.db.patch(user._id, {
@@ -53,26 +52,23 @@ export const upsertUser = mutation({
 });
 
 export const onboardUser = mutation({
-  args: {
-    id: v.id("users"),
-  },
+  args: {},
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, {
+    const user = await getCurrentUser(ctx);
+
+    if (!user) {
+      throw new ConvexError("User not found");
+    }
+
+    await ctx.db.patch(user._id, {
       isOnboarded: true,
     });
   },
 });
 
 export const currentUser = query({
-  args: {},
-  handler: async (ctx, args) => {
-    const user = await ctx.auth.getUserIdentity();
-    if (!user) {
-      return null;
-    }
-    return await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", user.subject))
-      .first();
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    return user;
   },
 });

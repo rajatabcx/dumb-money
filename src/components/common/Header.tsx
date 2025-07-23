@@ -28,9 +28,7 @@ const navigationLinks = [
   { href: "#", label: "About" },
 ];
 
-export function Header() {
-  const user = useQuery(api.user.currentUser);
-
+export function Header({ isSignedIn }: { isSignedIn: boolean }) {
   return (
     <header className="border-b px-4 md:px-6 fixed w-full">
       <div className="flex h-16 items-center justify-between gap-4">
@@ -114,14 +112,14 @@ export function Header() {
         </div>
         {/* Right side */}
         <div className="flex items-center gap-2">
-          {user ? null : (
+          {isSignedIn ? null : (
             <Button asChild variant="ghost" size="sm" className="text-sm">
               <a href={signInRoute()}>Sign In</a>
             </Button>
           )}
           <Button asChild size="sm" className="text-sm">
-            <a href={user ? dashboardRoute() : signUpRoute()}>
-              {user ? "Dashboard" : "Get Started"}
+            <a href={isSignedIn ? dashboardRoute() : signUpRoute()}>
+              {isSignedIn ? "Dashboard" : "Get Started"}
             </a>
           </Button>
         </div>
