@@ -1,16 +1,15 @@
 "use client";
 
-import { useTeamQuery } from "@/hooks/use-team";
-import { useI18n } from "@/locales/client";
-import type { RouterOutputs } from "@api/trpc/routers/_app";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { AnimatedNumber } from "../common/AnimatedNumber";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 type Props = {
-  data: RouterOutputs["invoice"]["invoiceSummary"];
+  data: { currency: string; totalAmount: number; invoiceCount: number }[];
   totalInvoiceCount: number;
   title: string;
 };
@@ -35,13 +34,12 @@ export function InvoiceSummarySkeleton() {
 }
 
 export function InvoiceSummary({ data, totalInvoiceCount, title }: Props) {
-  const t = useI18n();
   const [activeIndex, setActiveIndex] = useState(0);
-  const { data: team } = useTeamQuery();
+  const company = useQuery(api.company.get);
 
   const dataWithDefaultCurrency = data?.length
     ? data
-    : [{ currency: team?.baseCurrency, totalAmount: 0 }];
+    : [{ currency: company?.baseCurrency, totalAmount: 0 }];
 
   const item = dataWithDefaultCurrency[activeIndex];
 
@@ -56,7 +54,7 @@ export function InvoiceSummary({ data, totalInvoiceCount, title }: Props) {
           <AnimatedNumber
             key={item.currency}
             value={item.totalAmount}
-            currency={item.currency ?? team?.baseCurrency ?? "USD"}
+            currency={item.currency ?? company?.baseCurrency ?? "USD"}
             maximumFractionDigits={0}
             minimumFractionDigits={0}
           />
@@ -83,9 +81,11 @@ export function InvoiceSummary({ data, totalInvoiceCount, title }: Props) {
         <div className="flex flex-col gap-2">
           <div>{title}</div>
           <div className="text-sm text-muted-foreground">
-            {t("invoice_count", {
-              count: totalInvoiceCount ?? 0,
-            })}
+            {totalInvoiceCount === 0
+              ? "No invoices"
+              : totalInvoiceCount === 1
+              ? "1 invoice"
+              : `${totalInvoiceCount} invoices`}
           </div>
         </div>
       </CardContent>

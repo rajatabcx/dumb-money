@@ -2,13 +2,15 @@
 
 import { useInvoiceFilterParams } from "@/hooks/useInvoiceFilterParams";
 import { InvoiceSummary } from "./InvoiceSummary";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function InvoicesOpen() {
-  const { data } = useSuspenseQuery(
-    trpc.invoice.invoiceSummary.queryOptions({
-      status: "unpaid",
-    })
-  );
+export function InvoicesOpen({ companyId }: { companyId: Id<"company"> }) {
+  const data = useQuery(api.invoices.invoiceSummary, {
+    status: "unpaid",
+    companyId,
+  });
   const { setFilter } = useInvoiceFilterParams();
 
   const totalInvoiceCount = data?.reduce(
@@ -27,7 +29,7 @@ export function InvoicesOpen() {
       className="hidden sm:block text-left"
     >
       <InvoiceSummary
-        data={data}
+        data={data ?? []}
         totalInvoiceCount={totalInvoiceCount ?? 0}
         title="Open"
       />

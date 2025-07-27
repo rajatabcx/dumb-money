@@ -1,7 +1,6 @@
 "use client";
 
-import { useI18n } from "@/locales/client";
-import { cn } from "@/components/ui/cn";
+import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function InvoiceStatus({
@@ -13,8 +12,6 @@ export function InvoiceStatus({
   isLoading?: boolean;
   className?: string;
 }) {
-  const t = useI18n();
-
   if (isLoading) {
     return <Skeleton className="w-24 h-6 rounded-full" />;
   }
@@ -38,9 +35,7 @@ export function InvoiceStatus({
         className
       )}
     >
-      <span className="line-clamp-1 truncate inline-block">
-        {t(`invoice_status.${status}`)}
-      </span>
+      <span className="line-clamp-1 truncate inline-block">{status}</span>
     </div>
   );
 }

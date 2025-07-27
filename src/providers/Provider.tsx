@@ -5,13 +5,14 @@ import { ConvexClientProvider } from "./ConvexProviderWithClerk";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export default function Provider({ children }: { children: React.ReactNode }) {
   return (
     <ConvexClientProvider>
       <TooltipProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <NuqsAdapter>{children}</NuqsAdapter>
         </ThemeProvider>
       </TooltipProvider>
       <Toaster />

@@ -3,12 +3,12 @@
 import { useInvoiceStore } from "@/store/invoice";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Icons } from "@/components/ui/icons";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { SlidersHorizontal } from "lucide-react";
 
 export function InvoiceColumnVisibility() {
   const { columns } = useInvoiceStore();
@@ -17,7 +17,7 @@ export function InvoiceColumnVisibility() {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="icon">
-          <Icons.Tune size={18} />
+          <SlidersHorizontal className="size-4" />
         </Button>
       </PopoverTrigger>
 

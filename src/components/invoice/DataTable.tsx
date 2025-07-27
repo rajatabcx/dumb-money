@@ -1,16 +1,12 @@
 "use client";
 
-import { updateColumnVisibilityAction } from "@/actions/update-column-visibility-action";
-import { LoadMore } from "@/components/load-more";
-import { useInvoiceFilterParams } from "@/hooks/use-invoice-filter-params";
-import { useSortParams } from "@/hooks/use-sort-params";
-import { useTableScroll } from "@/hooks/use-table-scroll";
-import { useUserQuery } from "@/hooks/use-user";
-import { useInvoiceStore } from "@/store/invoice";
-import { useTRPC } from "@/trpc/client";
-import { Cookies } from "@/utils/constants";
-import { Table, TableBody } from "@midday/ui/table";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { updateColumnVisibilityAction } from "@/actions/updateColumnVisibility";
+import { LoadMore } from "@/components/common/LoadMore";
+import { useInvoiceFilterParams } from "@/hooks/useInvoiceFilterParams";
+import { useSortParams } from "@/hooks/useSortParams";
+import { useTableScroll } from "@/hooks/useTableScroll";
+import { Cookies } from "@/lib/constants";
+import { Table, TableBody } from "@/components/ui/table";
 import {
   type VisibilityState,
   getCoreRowModel,
@@ -19,24 +15,29 @@ import {
 } from "@tanstack/react-table";
 import React, { use, useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { columns } from "./columns";
-import { NoResults } from "./empty-states";
-import { EmptyState } from "./empty-states";
-import { InvoiceRow } from "./row";
-import { TableHeader } from "./table-header";
+import { columns } from "./Columns";
+import { NoResults } from "./EmptyStates";
+import { EmptyState } from "./EmptyStates";
+import { InvoiceRow } from "./InvoiceRow";
+import { TableHeader } from "./TableHeader";
+import { usePaginatedQuery, useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { useInvoiceStore } from "@/store/invoice";
+import { Id } from "../../../convex/_generated/dataModel";
 
 type Props = {
   columnVisibility: Promise<VisibilityState>;
+  companyId: Id<"company">;
 };
 
 export function DataTable({
   columnVisibility: columnVisibilityPromise,
+  companyId,
 }: Props) {
-  const trpc = useTRPC();
   const { params } = useSortParams();
   const { filter, hasFilters } = useInvoiceFilterParams();
   const { ref, inView } = useInView();
-  const { data: user } = useUserQuery();
+  const user = useQuery(api.user.currentUser);
 
   const { setColumns } = useInvoiceStore();
   const initialColumnVisibility = use(columnVisibilityPromise);
@@ -49,26 +50,25 @@ export function DataTable({
     startFromColumn: 1,
   });
 
-  const infiniteQueryOptions = trpc.invoice.get.infiniteQueryOptions(
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.invoices.getCompanyInvoices,
     {
-      sort: params.sort,
       ...filter,
+      sort: params.sort ?? [],
+      companyId,
     },
     {
-      getNextPageParam: ({ meta }) => meta?.cursor,
+      initialNumItems: 25,
     }
   );
 
-  const { data, fetchNextPage, hasNextPage, isFetching } =
-    useSuspenseInfiniteQuery(infiniteQueryOptions);
-
   const tableData = useMemo(() => {
-    return data?.pages.flatMap((page) => page?.data ?? []) ?? [];
-  }, [data]);
+    return results ?? [];
+  }, [results]);
 
   useEffect(() => {
     if (inView) {
-      fetchNextPage();
+      loadMore(25);
     }
   }, [inView]);
 
@@ -102,7 +102,7 @@ export function DataTable({
     return <NoResults />;
   }
 
-  if (!tableData?.length && !isFetching) {
+  if (!tableData?.length && status === "Exhausted") {
     return <EmptyState />;
   }
 
@@ -123,7 +123,7 @@ export function DataTable({
         </Table>
       </div>
 
-      <LoadMore ref={ref} hasNextPage={hasNextPage} />
+      <LoadMore ref={ref} hasNextPage={status === "CanLoadMore"} />
     </div>
   );
 }

@@ -1,18 +1,17 @@
 "use client";
 
-import { useInvoiceFilterParams } from "@/hooks/use-invoice-filter-params";
-import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useInvoiceFilterParams } from "@/hooks/useInvoiceFilterParams";
 import { InvoiceSummary } from "./InvoiceSummary";
+import { Id } from "../../../convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
-export function InvoicesOverdue() {
-  const trpc = useTRPC();
+export function InvoicesOverdue({ companyId }: { companyId: Id<"company"> }) {
   const { setFilter } = useInvoiceFilterParams();
-  const { data } = useSuspenseQuery(
-    trpc.invoice.invoiceSummary.queryOptions({
-      status: "overdue",
-    })
-  );
+  const data = useQuery(api.invoices.invoiceSummary, {
+    status: "overdue",
+    companyId,
+  });
 
   const totalInvoiceCount = data?.at(0)?.invoiceCount;
 
@@ -27,7 +26,7 @@ export function InvoicesOverdue() {
       className="hidden sm:block text-left"
     >
       <InvoiceSummary
-        data={data}
+        data={data ?? []}
         totalInvoiceCount={totalInvoiceCount ?? 0}
         title="Overdue"
       />

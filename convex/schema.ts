@@ -15,7 +15,7 @@ export default defineSchema({
     firstName: v.string(),
     lastName: v.string(),
     profileImage: v.optional(v.string()),
-    visitorId: v.string(),
+    visitorId: v.optional(v.string()),
     isOnboarded: v.boolean(),
     email: v.string(),
     locale: v.string(),
@@ -44,7 +44,12 @@ export default defineSchema({
     countryCode: v.optional(v.string()),
     token: v.string(),
     contact: v.optional(v.string()),
-  }).index("by_company", ["companyId"]),
+  })
+    .index("by_company", ["companyId"])
+    .searchIndex("search", {
+      searchField: "name",
+      filterFields: ["companyId"],
+    }),
 
   invoiceTemplates: defineTable({
     companyId: v.id("company"), // Reference to company
@@ -92,6 +97,7 @@ export default defineSchema({
     companyId: v.id("company"), // Reference to company
     customerId: v.optional(v.id("customers")), // Reference to customer
     userId: v.optional(v.id("users")), // Reference to user
+    visitorId: v.optional(v.string()),
     updatedAt: v.optional(v.number()), // timestamp in milliseconds
     dueDate: v.optional(v.number()), // timestamp in milliseconds
     invoiceNumber: v.optional(v.string()),
@@ -137,5 +143,10 @@ export default defineSchema({
     .index("by_customer", ["customerId"])
     .index("by_user", ["userId"])
     .index("by_status", ["status"])
-    .index("by_scheduled_job", ["scheduledJobId"]),
+    .index("by_scheduled_job", ["scheduledJobId"])
+    .index("by_visitor", ["visitorId"])
+    .searchIndex("summary", {
+      searchField: "status",
+      filterFields: ["companyId"],
+    }),
 });
