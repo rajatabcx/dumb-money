@@ -1,26 +1,31 @@
 "use client";
 
 import { Editor } from "@/components/invoice/Editor";
-import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
 import { Controller, useFormContext } from "react-hook-form";
 import { LabelInput } from "./LabelInput";
+import { Id } from "../../../convex/_generated/dataModel";
+import { api } from "../../../convex/_generated/api";
+import { useApiMutation } from "@/hooks/useApiMutation";
 
-export function PaymentDetails() {
+type Props = {
+  companyId: Id<"company">;
+};
+
+export function PaymentDetails({ companyId }: Props) {
   const { control, watch } = useFormContext();
   const id = watch("id");
 
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   return (
     <div>
       <LabelInput
         name="template.paymentLabel"
         onSave={(value) => {
-          updateTemplateMutation.mutate({ paymentLabel: value });
+          updateTemplateMutation.mutate({
+            template: { paymentLabel: value },
+            companyId: companyId,
+          });
         }}
         className="mb-2 block"
       />
@@ -36,7 +41,10 @@ export function PaymentDetails() {
             onChange={field.onChange}
             onBlur={(content) => {
               updateTemplateMutation.mutate({
-                paymentDetails: content ? JSON.stringify(content) : null,
+                template: {
+                  paymentDetails: content ? JSON.stringify(content) : undefined,
+                },
+                companyId: companyId,
               });
             }}
             className="min-h-[78px]"

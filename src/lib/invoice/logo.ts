@@ -9,3 +9,9 @@ export async function isValidLogoUrl(url: string): Promise<boolean> {
     return false;
   }
 }
+
+export function getWebsiteLogo(website?: string | null) {
+  if (!website) return "";
+
+  return `https://img.logo.dev/${website}?token=pk_X-pk_HS4IwQOHQ6-MBrSH9amcPw&size=180&retina=true`;
+}

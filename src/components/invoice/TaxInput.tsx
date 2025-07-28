@@ -1,4 +1,4 @@
-import { CurrencyInput } from "@/components/ui/currency-input";
+import { CurrencyInput } from "@/components/common/CurrencyInput";
 import { useController, useFormContext } from "react-hook-form";
 
 export function TaxInput() {

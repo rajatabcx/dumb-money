@@ -22,7 +22,14 @@ export default defineSchema({
     weekStartsOnMonday: v.boolean(),
     timezone: v.optional(v.string()),
     timeFormat: v.number(),
-    dateFormat: v.optional(v.string()),
+    dateFormat: v.optional(
+      v.union(
+        v.literal("dd/MM/yyyy"),
+        v.literal("MM/dd/yyyy"),
+        v.literal("yyyy-MM-dd"),
+        v.literal("dd.MM.yyyy")
+      )
+    ),
     companyId: v.optional(v.id("company")),
   }).index("by_clerk_id", ["clerkId"]),
 
@@ -71,15 +78,18 @@ export default defineSchema({
     paymentDetails: v.optional(v.any()), // JSON field
     fromDetails: v.optional(v.any()), // JSON field
     size: v.union(v.literal("a4"), v.literal("letter")),
-    dateFormat: v.optional(v.string()),
+    dateFormat: v.optional(
+      v.union(
+        v.literal("dd/MM/yyyy"),
+        v.literal("MM/dd/yyyy"),
+        v.literal("yyyy-MM-dd"),
+        v.literal("dd.MM.yyyy")
+      )
+    ),
     includeVat: v.optional(v.boolean()),
     includeTax: v.optional(v.boolean()),
     taxRate: v.optional(v.number()), // Numeric field
-    deliveryType: v.union(
-      v.literal("create"),
-      v.literal("create_and_send"),
-      v.literal("scheduled")
-    ),
+    deliveryType: v.union(v.literal("create"), v.literal("create_and_send")),
     discountLabel: v.optional(v.string()),
     includeDiscount: v.optional(v.boolean()),
     includeDecimals: v.optional(v.boolean()),
@@ -98,8 +108,8 @@ export default defineSchema({
     customerId: v.optional(v.id("customers")), // Reference to customer
     userId: v.optional(v.id("users")), // Reference to user
     visitorId: v.optional(v.string()),
-    updatedAt: v.optional(v.number()), // timestamp in milliseconds
-    dueDate: v.optional(v.number()), // timestamp in milliseconds
+    updatedAt: v.optional(v.string()), // timestamp in milliseconds
+    dueDate: v.optional(v.string()), // timestamp in milliseconds
     invoiceNumber: v.optional(v.string()),
     amount: v.optional(v.number()), // Numeric field
     currency: v.optional(v.string()),
@@ -109,10 +119,11 @@ export default defineSchema({
     companyDetails: v.optional(v.any()), // JSON field (fixed typo from companyDatails)
     note: v.optional(v.string()),
     internalNote: v.optional(v.string()),
-    paidAt: v.optional(v.number()), // timestamp in milliseconds
+    paidAt: v.optional(v.string()), // timestamp in milliseconds
     vat: v.optional(v.number()), // Numeric field
     tax: v.optional(v.number()), // Numeric field
     url: v.optional(v.string()),
+    storageId: v.optional(v.id("_storage")),
     filePath: v.optional(v.array(v.string())), // Array of file paths
     status: v.union(
       v.literal("draft"),
@@ -121,22 +132,23 @@ export default defineSchema({
       v.literal("unpaid"),
       v.literal("canceled")
     ),
-    viewedAt: v.optional(v.number()), // timestamp in milliseconds
+    viewedAt: v.optional(v.string()), // timestamp in milliseconds
     fromDetails: v.optional(v.any()), // JSON field
-    issueDate: v.optional(v.number()), // timestamp in milliseconds
+    issueDate: v.optional(v.string()), // timestamp in milliseconds
     template: v.optional(v.any()), // JSON field
     noteDetails: v.optional(v.any()), // JSON field
     customerName: v.optional(v.string()),
     token: v.string(),
+    id: v.string(),
     sentTo: v.optional(v.string()),
-    reminderSentAt: v.optional(v.number()), // timestamp in milliseconds
+    reminderSentAt: v.optional(v.string()), // timestamp in milliseconds
     discount: v.optional(v.number()), // Numeric field
     fileSize: v.optional(v.number()), // Numeric field
     subtotal: v.optional(v.number()), // Numeric field
     topBlock: v.optional(v.any()), // JSON field
     bottomBlock: v.optional(v.any()), // JSON field
-    sentAt: v.optional(v.number()), // timestamp in milliseconds
-    scheduledAt: v.optional(v.number()), // timestamp in milliseconds
+    sentAt: v.optional(v.string()), // timestamp in milliseconds
+    scheduledAt: v.optional(v.string()), // timestamp in milliseconds
     scheduledJobId: v.optional(v.string()),
   })
     .index("by_company", ["companyId"])
@@ -147,6 +159,10 @@ export default defineSchema({
     .index("by_visitor", ["visitorId"])
     .searchIndex("summary", {
       searchField: "status",
+      filterFields: ["companyId"],
+    })
+    .searchIndex("invoice_number", {
+      searchField: "invoiceNumber",
       filterFields: ["companyId"],
     }),
 });

@@ -16,7 +16,7 @@ export function InvoiceColumnVisibility() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" className="cursor-pointer">
           <SlidersHorizontal className="size-4" />
         </Button>
       </PopoverTrigger>

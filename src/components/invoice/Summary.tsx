@@ -1,5 +1,4 @@
 import { calculateTotal } from "@/lib/invoice/calculate";
-import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { AnimatedNumber } from "@/components/common/AnimatedNumber";
@@ -8,14 +7,14 @@ import { AmountInput } from "./AmountInput";
 import { LabelInput } from "./LabelInput";
 import { TaxInput } from "./TaxInput";
 import { VATInput } from "./VatInput";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function Summary() {
+export function Summary({ companyId }: { companyId: Id<"company"> }) {
   const { control, setValue } = useFormContext();
 
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const includeDecimals = useWatch({
     control,
@@ -119,7 +118,10 @@ export function Summary() {
           className="flex-shrink-0 min-w-6"
           name="template.subtotalLabel"
           onSave={(value) => {
-            updateTemplateMutation.mutate({ subtotalLabel: value });
+            updateTemplateMutation.mutate({
+              companyId,
+              template: { subtotalLabel: value },
+            });
           }}
         />
         <span className="text-right font-mono text-[11px] text-[#878787]">
@@ -137,7 +139,10 @@ export function Summary() {
           <LabelInput
             name="template.discountLabel"
             onSave={(value) => {
-              updateTemplateMutation.mutate({ discountLabel: value });
+              updateTemplateMutation.mutate({
+                companyId,
+                template: { discountLabel: value },
+              });
             }}
           />
 
@@ -157,7 +162,10 @@ export function Summary() {
               className="flex-shrink-0 min-w-5"
               name="template.vatLabel"
               onSave={(value) => {
-                updateTemplateMutation.mutate({ vatLabel: value });
+                updateTemplateMutation.mutate({
+                  companyId,
+                  template: { vatLabel: value },
+                });
               }}
             />
 
@@ -182,7 +190,10 @@ export function Summary() {
               className="flex-shrink-0 min-w-5"
               name="template.taxLabel"
               onSave={(value) => {
-                updateTemplateMutation.mutate({ taxLabel: value });
+                updateTemplateMutation.mutate({
+                  companyId,
+                  template: { taxLabel: value },
+                });
               }}
             />
 
@@ -203,7 +214,10 @@ export function Summary() {
         <LabelInput
           name="template.totalSummaryLabel"
           onSave={(value) => {
-            updateTemplateMutation.mutate({ totalSummaryLabel: value });
+            updateTemplateMutation.mutate({
+              companyId,
+              template: { totalSummaryLabel: value },
+            });
           }}
         />
         <span className="text-right font-mono font-medium text-[21px]">

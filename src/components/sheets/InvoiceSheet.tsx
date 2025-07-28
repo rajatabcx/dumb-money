@@ -5,41 +5,37 @@ import { FormContext } from "@/components/invoice/FormContext";
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
 import { Sheet } from "@/components/ui/sheet";
 import React from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function InvoiceSheet() {
+export function InvoiceSheet({ companyId }: { companyId: Id<"company"> }) {
   const { setParams, type, invoiceId } = useInvoiceParams();
   const isOpen = type === "create" || type === "edit" || type === "success";
 
   // Get default settings for new invoices
-  const { data: defaultSettings, refetch } = useSuspenseQuery(
-    trpc.invoice.defaultSettings.queryOptions()
-  );
+  const defaultSettings = useQuery(api.invoices.defaultSettings, {
+    companyId: companyId,
+  });
 
   // Get draft invoice for edit
-  const { data } = useQuery(
-    trpc.invoice.getById.queryOptions(
-      {
-        id: invoiceId!,
-      },
-      {
-        enabled: !!invoiceId,
-      }
-    )
+  const data = useQuery(
+    api.invoices.getInvoice,
+    invoiceId
+      ? {
+          id: invoiceId,
+        }
+      : "skip"
   );
 
   const handleOnOpenChange = (open: boolean) => {
-    // Refetch default settings when the sheet is closed
-    if (!open) {
-      refetch();
-    }
-
     setParams(null);
   };
 
   return (
     <Sheet open={isOpen} onOpenChange={handleOnOpenChange}>
       <FormContext defaultSettings={defaultSettings} data={data}>
-        <InvoiceContent />
+        <InvoiceContent companyId={companyId} />
       </FormContext>
     </Sheet>
   );

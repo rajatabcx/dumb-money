@@ -1,8 +1,6 @@
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
-import { useTRPC } from "@/trpc/client";
 import { formatRelativeTime } from "@/lib/format";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useDebounceValue } from "usehooks-ts";
@@ -20,8 +18,11 @@ import { SubmitButton } from "./SubmitButton";
 import { Summary } from "./Summary";
 import { transformFormValuesToDraft } from "@/lib/invoice/utils";
 import { ExternalLink } from "lucide-react";
+import { Id } from "../../../convex/_generated/dataModel";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
 
-export function Form() {
+export function Form({ companyId }: { companyId: Id<"company"> }) {
   const { invoiceId, setParams } = useInvoiceParams();
   const [lastUpdated, setLastUpdated] = useState<Date | undefined>();
   const [lastEditedText, setLastEditedText] = useState("");
@@ -29,53 +30,9 @@ export function Form() {
   const form = useFormContext();
   const token = form.watch("token");
 
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+  const draftInvoiceMutation = useApiMutation(api.invoices.draft);
 
-  const draftInvoiceMutation = useMutation(
-    trpc.invoice.draft.mutationOptions({
-      onSuccess: (data) => {
-        if (!invoiceId && data?.id) {
-          setParams({ type: "edit", invoiceId: data.id });
-        }
-
-        setLastUpdated(new Date());
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.infiniteQueryKey(),
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.invoiceSummary.queryKey(),
-        });
-      },
-    })
-  );
-
-  const createInvoiceMutation = useMutation(
-    trpc.invoice.create.mutationOptions({
-      onSuccess: (data) => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.infiniteQueryKey(),
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.getById.queryKey(),
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.invoiceSummary.queryKey(),
-        });
-
-        // Invalidate global search
-        queryClient.invalidateQueries({
-          queryKey: trpc.search.global.queryKey(),
-        });
-
-        setParams({ type: "success", invoiceId: data.id });
-      },
-    })
-  );
+  const createInvoiceMutation = useApiMutation(api.invoices.create);
 
   // Only watch the fields that are used in the upsert action
   const formValues = useWatch({
@@ -105,13 +62,21 @@ export function Form() {
   const invoiceNumberValid = !form.getFieldState("invoiceNumber").error;
   const [debouncedValue] = useDebounceValue(formValues, 500);
 
+  const handleDraftInvoice = async () => {
+    const currentFormValues = form.getValues();
+    const result = await draftInvoiceMutation.mutate(
+      transformFormValuesToDraft(currentFormValues)
+    );
+
+    if (!!result) {
+      setParams({ type: "edit", invoiceId: result });
+      setLastUpdated(new Date());
+    }
+  };
+
   useEffect(() => {
     if (isDirty && form.watch("customerId") && invoiceNumberValid) {
-      const currentFormValues = form.getValues();
-      draftInvoiceMutation.mutate(
-        // @ts-expect-error
-        transformFormValuesToDraft(currentFormValues)
-      );
+      handleDraftInvoice();
     }
   }, [debouncedValue, isDirty, invoiceNumberValid]);
 
@@ -132,11 +97,13 @@ export function Form() {
   }, [lastUpdated]);
 
   // Submit the form and the draft invoice
-  const handleSubmit = (values: InvoiceFormValues) => {
-    createInvoiceMutation.mutate({
-      id: values.id,
+  const handleSubmit = async (values: InvoiceFormValues) => {
+    const res = await createInvoiceMutation.mutate({
+      companyId: companyId,
+      invoiceId: values.id as Id<"invoices">,
       deliveryType: values.template.deliveryType ?? "create",
     });
+    setParams({ type: "success", invoiceId: res });
   };
 
   // Prevent form from submitting when pressing enter
@@ -156,33 +123,33 @@ export function Form() {
       <ScrollArea className="h-[calc(100vh-200px)] bg-background" hideScrollbar>
         <div className="p-8 pb-4 h-full flex flex-col">
           <div className="flex justify-between">
-            <Meta />
-            <Logo />
+            <Meta companyId={companyId} />
+            <Logo companyId={companyId} />
           </div>
 
           <div className="grid grid-cols-2 gap-6 mt-8 mb-4">
             <div>
-              <FromDetails />
+              <FromDetails companyId={companyId} />
             </div>
             <div>
-              <CustomerDetails />
+              <CustomerDetails companyId={companyId} />
             </div>
           </div>
 
           <EditBlock name="topBlock" />
 
           <div className="mt-4">
-            <LineItems />
+            <LineItems companyId={companyId} />
           </div>
 
           <div className="mt-12 flex justify-end mb-8">
-            <Summary />
+            <Summary companyId={companyId} />
           </div>
 
           <div className="flex flex-col mt-auto">
             <div className="grid grid-cols-2 gap-6 mb-4 overflow-hidden">
-              <PaymentDetails />
-              <NoteDetails />
+              <PaymentDetails companyId={companyId} />
+              <NoteDetails companyId={companyId} />
             </div>
 
             <EditBlock name="bottomBlock" />
@@ -217,6 +184,7 @@ export function Form() {
           </div>
 
           <SubmitButton
+            companyId={companyId}
             isSubmitting={createInvoiceMutation.isPending}
             disabled={
               createInvoiceMutation.isPending || draftInvoiceMutation.isPending

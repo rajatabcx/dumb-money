@@ -1,7 +1,5 @@
 "use client";
 
-import { useTRPC } from "@/trpc/client";
-import { uniqueCurrencies } from "@midday/location/currencies";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -11,10 +9,26 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Icons } from "@/components/ui/icons";
-import { useMutation } from "@tanstack/react-query";
 import { useFormContext } from "react-hook-form";
-import { SelectCurrency } from "../select-currency";
+import { uniqueCurrencies } from "@/lib/currencies";
+import {
+  Calculator,
+  CalendarRange,
+  DecimalsArrowRight,
+  DollarSign,
+  Landmark,
+  MailPlus,
+  Milestone,
+  MoreVertical,
+  QrCode,
+  Ruler,
+  Scan,
+  Ticket,
+} from "lucide-react";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { SelectCurrency } from "../common/SelectCurrency";
+import { Id } from "../../../convex/_generated/dataModel";
 
 const dateFormats = [
   { value: "dd/MM/yyyy", label: "DD/MM/YYYY" },
@@ -35,31 +49,31 @@ const booleanOptions = [
 
 const menuItems = [
   {
-    icon: Icons.DateFormat,
+    icon: CalendarRange,
     label: "Date format",
     options: dateFormats,
     key: "dateFormat",
   },
   {
-    icon: Icons.CropFree,
+    icon: Scan,
     label: "Invoice size",
     options: invoiceSizes,
     key: "size",
   },
   {
-    icon: Icons.Tax,
+    icon: Landmark,
     label: "Add sales tax",
     options: booleanOptions,
     key: "includeTax",
   },
   {
-    icon: Icons.Vat,
+    icon: Calculator,
     label: "Add VAT",
     options: booleanOptions,
     key: "includeVat",
   },
   {
-    icon: Icons.CurrencyOutline,
+    icon: DollarSign,
     label: "Currency",
     options: uniqueCurrencies.map((currency) => ({
       value: currency,
@@ -68,55 +82,52 @@ const menuItems = [
     key: "currency",
   },
   {
-    icon: Icons.ConfirmationNumber,
+    icon: Ticket,
     label: "Add discount",
     options: booleanOptions,
     key: "includeDiscount",
   },
   {
-    icon: Icons.AttachEmail,
+    icon: MailPlus,
     label: "Attach PDF in email",
     options: booleanOptions,
     key: "includePdf",
   },
   {
-    icon: Icons.OutgoingMail,
+    icon: Milestone,
     label: "Send copy (BCC)",
     options: booleanOptions,
     key: "sendCopy",
   },
   {
-    icon: Icons.Straighten,
+    icon: Ruler,
     label: "Add units",
     options: booleanOptions,
     key: "includeUnits",
   },
   {
-    icon: Icons.Decimals,
+    icon: DecimalsArrowRight,
     label: "Decimals",
     options: booleanOptions,
     key: "includeDecimals",
   },
   {
-    icon: Icons.QrCode,
+    icon: QrCode,
     label: "Add QR code",
     options: booleanOptions,
     key: "includeQr",
   },
 ];
 
-export function SettingsMenu() {
+export function SettingsMenu({ companyId }: { companyId: Id<"company"> }) {
   const { watch, setValue } = useFormContext();
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button type="button">
-          <Icons.MoreVertical className="size-5" />
+          <MoreVertical className="size-5" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
@@ -141,7 +152,10 @@ export function SettingsMenu() {
                         shouldValidate: true,
                       });
                       updateTemplateMutation.mutate({
-                        [item.key]: value,
+                        template: {
+                          [item.key]: value,
+                        },
+                        companyId: companyId,
                       });
                     }}
                   />
@@ -169,7 +183,10 @@ export function SettingsMenu() {
                         });
 
                         updateTemplateMutation.mutate({
-                          [item.key]: option.value,
+                          template: {
+                            [item.key]: option.value,
+                          },
+                          companyId: companyId,
                         });
                       }
                     }}

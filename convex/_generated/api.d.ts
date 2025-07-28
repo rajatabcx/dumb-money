@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as company from "../company.js";
 import type * as customer from "../customer.js";
+import type * as file from "../file.js";
 import type * as invoiceHelper from "../invoiceHelper.js";
 import type * as invoices from "../invoices.js";
 import type * as useHelper from "../useHelper.js";
@@ -31,6 +32,7 @@ import type * as user from "../user.js";
 declare const fullApi: ApiFromModules<{
   company: typeof company;
   customer: typeof customer;
+  file: typeof file;
   invoiceHelper: typeof invoiceHelper;
   invoices: typeof invoices;
   useHelper: typeof useHelper;

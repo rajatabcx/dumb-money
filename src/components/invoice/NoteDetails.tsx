@@ -1,26 +1,31 @@
 "use client";
 
 import { Editor } from "@/components/invoice/Editor";
-import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
 import { Controller, useFormContext } from "react-hook-form";
 import { LabelInput } from "./LabelInput";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function NoteDetails() {
+type Props = {
+  companyId: Id<"company">;
+};
+
+export function NoteDetails({ companyId }: Props) {
   const { control, watch } = useFormContext();
   const id = watch("id");
 
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   return (
     <div>
       <LabelInput
         name="template.noteLabel"
         onSave={(value) => {
-          updateTemplateMutation.mutate({ noteLabel: value });
+          updateTemplateMutation.mutate({
+            template: { noteLabel: value },
+            companyId: companyId,
+          });
         }}
         className="mb-2 block"
       />

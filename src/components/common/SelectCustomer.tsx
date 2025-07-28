@@ -2,7 +2,6 @@
 
 import { useCustomerParams } from "@/hooks/useCustomerParams";
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
-import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -17,26 +16,25 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function SelectCustomer() {
-  const trpc = useTRPC();
+export function SelectCustomer({ companyId }: { companyId: Id<"company"> }) {
   const { setParams: setCustomerParams } = useCustomerParams();
   const { setParams: setInvoiceParams } = useInvoiceParams();
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
-  const { data: customers } = useQuery(
-    trpc.customers.get.queryOptions({
-      pageSize: 100,
-    })
-  );
+  const customers = useQuery(api.customer.getAll, {
+    companyId: companyId,
+  });
 
-  const formatData = customers?.data?.map((item) => ({
+  const formatData = customers?.map((item) => ({
     value: item.name,
     label: item.name,
-    id: item.id,
+    id: item._id,
   }));
 
   const handleSelect = (id: string) => {
@@ -49,13 +47,13 @@ export function SelectCustomer() {
     setOpen(false);
   };
 
-  if (!customers?.data?.length) {
+  if (!customers?.length) {
     return (
       <Button
         type="button"
         variant="ghost"
         onClick={() => setCustomerParams({ createCustomer: true })}
-        className="font-mono text-[#434343] p-0 text-[11px] h-auto hover:bg-transparent"
+        className="font-mono text-[#434343] p-0 text-[11px] h-auto hover:bg-transparent cursor-pointer"
       >
         Select customer
       </Button>
@@ -69,7 +67,7 @@ export function SelectCustomer() {
           type="button"
           variant="ghost"
           aria-expanded={open}
-          className="font-mono text-[#434343] p-0 text-[11px] h-auto hover:bg-transparent"
+          className="font-mono text-[#434343] p-0 text-[11px] h-auto hover:bg-transparent cursor-pointer"
         >
           Select customer
         </Button>

@@ -1,5 +1,5 @@
-import { cn } from "@/components/ui/cn";
-import { CurrencyInput } from "@/components/ui/currency-input";
+import { cn } from "@/lib/utils";
+import { CurrencyInput } from "@/components/common/CurrencyInput";
 import { useState } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import type { NumericFormatProps } from "react-number-format";

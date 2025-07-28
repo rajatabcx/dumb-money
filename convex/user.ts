@@ -1,6 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { internalQuery, mutation, query } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { mutation, query } from "./_generated/server";
 import { getCurrentUser } from "./useHelper";
 
 export const upsertUser = mutation({
@@ -14,7 +13,14 @@ export const upsertUser = mutation({
     locale: v.optional(v.string()),
     weekStartsOnMonday: v.optional(v.boolean()),
     timeFormat: v.optional(v.number()),
-    dateFormat: v.optional(v.string()),
+    dateFormat: v.optional(
+      v.union(
+        v.literal("dd/MM/yyyy"),
+        v.literal("MM/dd/yyyy"),
+        v.literal("yyyy-MM-dd"),
+        v.literal("dd.MM.yyyy")
+      )
+    ),
     timezone: v.optional(v.string()),
     companyId: v.optional(v.id("company")),
   },

@@ -1,47 +1,45 @@
 "use client";
 
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
-import { downloadFile } from "@/lib/download";
-import { useTRPC } from "@/trpc/client";
-import { getUrl } from "@/utils/environment";
-import { getWebsiteLogo } from "@/utils/logos";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImageNext,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/components/ui/cn";
-import { Icons } from "@/components/ui/icons";
-import { useQuery } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CopyInput } from "./copy-input";
-import { FormatAmount } from "./format-amount";
+import { FormatAmount } from "@/components/common/FormatAmount";
 import { InvoiceActions } from "./InvoiceActions";
 import { InvoiceDetailsSkeleton } from "./InvoiceDetailsSkeleton";
 import { InvoiceNote } from "./InvoiceNote";
 import { InvoiceStatus } from "./InvoiceStatus";
-import { InvoiceActivity } from "./invoice/activity";
-import { OpenURL } from "./open-url";
+import { InvoiceActivity } from "@/components/invoice/InvoiceActivity";
+import { OpenURL } from "@/components/common/OpenUrl";
+import { CopyInput } from "@/components/ui/copy-input";
+import { ArrowDown, ExternalLink } from "lucide-react";
+import { getWebsiteLogo } from "@/lib/invoice/logo";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { downloadFileAction } from "@/actions/downloadFile";
 
 export function InvoiceDetails() {
-  const trpc = useTRPC();
   const { invoiceId } = useInvoiceParams();
 
   const isOpen = invoiceId !== null;
 
-  const { data, isLoading } = useQuery({
-    ...trpc.invoice.getById.queryOptions({ id: invoiceId! }),
-    enabled: isOpen,
-  });
+  const data = useQuery(
+    api.invoices.getInvoice,
+    isOpen
+      ? {
+          id: invoiceId,
+        }
+      : "skip"
+  );
 
-  if (isLoading) {
+  if (data === undefined) {
     return <InvoiceDetailsSkeleton />;
   }
 
@@ -51,7 +49,7 @@ export function InvoiceDetails() {
 
   const {
     id,
-    customer,
+    customerId,
     amount,
     currency,
     status,
@@ -68,7 +66,19 @@ export function InvoiceDetails() {
     sentAt,
     sentTo,
     customerName,
+    customer,
   } = data;
+
+  const handleDownload = async () => {
+    if (!data.storageId) {
+      return;
+    }
+
+    const url = await downloadFileAction(data.storageId);
+    if (url) {
+      window.open(url, "_blank");
+    }
+  };
 
   return (
     <div className="h-full">
@@ -76,12 +86,11 @@ export function InvoiceDetails() {
         <div className="flex space-x-2 mt-1 items-center">
           <Avatar className="size-5">
             {customer?.website && (
-              <AvatarImageNext
+              <AvatarImage
                 src={getWebsiteLogo(customer?.website)}
                 alt={`${customer?.name} logo`}
                 width={20}
                 height={20}
-                quality={100}
               />
             )}
             <AvatarFallback className="text-[9px] font-medium">
@@ -187,16 +196,21 @@ export function InvoiceDetails() {
           </div>
         </div>
 
-        {customer && (
+        {customerId && (
           <div className="mt-6 flex flex-col space-y-2 border-t border-border pt-6">
             <span className="text-sm text-[#606060]">Invoice link</span>
             <div className="flex w-full gap-2">
               <div className="flex-1 min-w-0 relative">
-                <CopyInput value={`${getUrl()}/i/${token}`} className="pr-14" />
+                <CopyInput
+                  value={`${process.env.NEXT_PUBLIC_BASE_URL}/i/${token}`}
+                  className="pr-14"
+                />
 
                 <div className="absolute right-10 top-[11px] border-r border-border pr-2">
-                  <OpenURL href={`${getUrl()}/i/${token}`}>
-                    <Icons.OpenInNew />
+                  <OpenURL
+                    href={`${process.env.NEXT_PUBLIC_BASE_URL}/i/${token}`}
+                  >
+                    <ExternalLink />
                   </OpenURL>
                 </div>
               </div>
@@ -205,15 +219,10 @@ export function InvoiceDetails() {
                 <Button
                   variant="secondary"
                   className="size-[38px] hover:bg-secondary shrink-0"
-                  onClick={() => {
-                    downloadFile(
-                      `/api/download/invoice?id=${id}`,
-                      `${invoiceNumber}.pdf`
-                    );
-                  }}
+                  onClick={handleDownload}
                 >
                   <div>
-                    <Icons.ArrowCoolDown className="size-4" />
+                    <ArrowDown className="size-4" />
                   </div>
                 </Button>
               )}
@@ -235,7 +244,7 @@ export function InvoiceDetails() {
           <AccordionItem value="note">
             <AccordionTrigger>Internal note</AccordionTrigger>
             <AccordionContent>
-              <InvoiceNote id={id} defaultValue={internalNote} />
+              <InvoiceNote id={data._id} defaultValue={internalNote} />
             </AccordionContent>
           </AccordionItem>
         </Accordion>

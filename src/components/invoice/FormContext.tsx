@@ -1,11 +1,15 @@
 "use client";
 
 import { useZodForm } from "@/hooks/useZodForm";
-import { invoiceTemplateSchema, lineItemSchema } from "@api/schemas/invoice";
-import type { RouterOutputs } from "@api/trpc/routers/_app";
+import {
+  invoiceTemplateSchema,
+  lineItemSchema,
+} from "@/lib/invoice/validationSchemas";
+import { FunctionReturnType } from "convex/server";
 import { useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 import { z } from "zod";
+import { api } from "../../../convex/_generated/api";
 
 export const invoiceFormSchema = z.object({
   id: z.string(),
@@ -34,10 +38,13 @@ export const invoiceFormSchema = z.object({
 
 export type InvoiceFormValues = z.infer<typeof invoiceFormSchema>;
 
+type Invoice = FunctionReturnType<typeof api.invoices.getInvoice>;
+type InvoiceTemplate = FunctionReturnType<typeof api.invoices.defaultSettings>;
+
 type FormContextProps = {
   children: React.ReactNode;
-  data?: RouterOutputs["invoice"]["getById"];
-  defaultSettings?: RouterOutputs["invoice"]["defaultSettings"];
+  data?: Invoice;
+  defaultSettings?: InvoiceTemplate;
 };
 
 export function FormContext({
@@ -46,7 +53,7 @@ export function FormContext({
   defaultSettings,
 }: FormContextProps) {
   const form = useZodForm(invoiceFormSchema, {
-    defaultValues: defaultSettings,
+    defaultValues: defaultSettings ?? {},
     mode: "onChange",
   });
 

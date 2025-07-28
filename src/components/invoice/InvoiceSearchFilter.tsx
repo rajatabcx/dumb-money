@@ -76,11 +76,16 @@ export function InvoiceSearchFilter({
           <Input
             placeholder="Search or filter"
             className="pl-9 w-full sm:w-[350px] pr-8"
-            value={filter.q}
+            defaultValue={filter.q}
             autoComplete="off"
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck="false"
+            onChange={(e) => {
+              setFilter({
+                q: e.target.value,
+              });
+            }}
           />
 
           <DropdownMenuTrigger asChild>
@@ -88,7 +93,7 @@ export function InvoiceSearchFilter({
               onClick={() => setIsOpen((prev) => !prev)}
               type="button"
               className={cn(
-                "absolute z-10 right-3 top-[10px] opacity-50 transition-opacity duration-300 hover:opacity-100",
+                "absolute z-10 right-3 top-[10px] opacity-50 transition-opacity duration-300 hover:opacity-100 cursor-pointer",
                 hasValidFilters && "opacity-100",
                 isOpen && "opacity-100"
               )}

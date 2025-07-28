@@ -1,10 +1,10 @@
 "use client";
 
-import { isValidJSON } from "@midday/invoice/content";
-import { cn } from "@/components/ui/cn";
+import { isValidJSON } from "@/lib/invoice/content";
+import { cn } from "@/lib/utils";
 import type { JSONContent } from "@tiptap/react";
 import { useFormContext } from "react-hook-form";
-import { Editor } from "./Editor";
+import { Editor } from "@/components/invoice/Editor";
 
 export function Description({
   className,

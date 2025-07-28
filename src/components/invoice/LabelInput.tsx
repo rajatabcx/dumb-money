@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/components/ui/cn";
+import { cn } from "@/lib/utils";
 import { useFormContext } from "react-hook-form";
 
 type Props = {

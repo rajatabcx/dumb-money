@@ -2,38 +2,42 @@
 
 import { Editor } from "@/components/invoice/Editor";
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
-import { useTRPC } from "@/trpc/client";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import type { JSONContent } from "@tiptap/react";
 import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { SelectCustomer } from "@/components/common/SelectCustomer";
 import { LabelInput } from "./LabelInput";
 import { transformCustomerToContent } from "@/lib/invoice/utils";
+import { Id } from "../../../convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { useApiMutation } from "@/hooks/useApiMutation";
 
-export function CustomerDetails() {
+export function CustomerDetails({ companyId }: { companyId: Id<"company"> }) {
   const { control, setValue, watch } = useFormContext();
   const { setParams, selectedCustomerId } = useInvoiceParams();
 
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const content = watch("customerDetails");
   const id = watch("id");
 
-  const { data: customer } = useQuery(
-    trpc.customers.getById.queryOptions(
-      { id: selectedCustomerId! },
-      {
-        enabled: !!selectedCustomerId,
-      }
-    )
+  const customer = useQuery(
+    api.customer.getById,
+    selectedCustomerId
+      ? {
+          id: selectedCustomerId,
+        }
+      : "skip"
   );
 
   const handleLabelSave = (value: string) => {
-    updateTemplateMutation.mutate({ customerLabel: value });
+    updateTemplateMutation.mutate({
+      companyId,
+      template: {
+        customerLabel: value,
+      },
+    });
   };
 
   const handleOnChange = (content?: JSONContent | null) => {
@@ -59,7 +63,7 @@ export function CustomerDetails() {
       setParams({ selectedCustomerId: null });
 
       setValue("customerName", customer.name, { shouldValidate: true });
-      setValue("customerId", customer.id, { shouldValidate: true });
+      setValue("customerId", customer._id, { shouldValidate: true });
       setValue("customerDetails", customerContent, {
         shouldValidate: true,
         shouldDirty: true,
@@ -89,7 +93,7 @@ export function CustomerDetails() {
           )}
         />
       ) : (
-        <SelectCustomer />
+        <SelectCustomer companyId={companyId} />
       )}
     </div>
   );

@@ -4,40 +4,16 @@ import { CustomerCreateSheet } from "@/components/sheets/CustomerCreateSheet";
 import { CustomerEditSheet } from "@/components/sheets/CustomerEditSheet";
 import { InvoiceDetailsSheet } from "@/components/sheets/InvoiceDetailsSheet";
 import { InvoiceSheet } from "@/components/sheets/InvoiceSheet";
-import { use } from "react";
+import { Id } from "../../../convex/_generated/dataModel";
 
-type Props = {
-  currencyPromise: Promise<string>;
-  countryCodePromise: Promise<string>;
-};
-
-export function GlobalSheets({ currencyPromise, countryCodePromise }: Props) {
-  const currency = use(currencyPromise);
-  const countryCode = use(countryCodePromise);
-
+export function GlobalSheets({ companyId }: { companyId: Id<"company"> }) {
   return (
     <>
-      {/* <TrackerUpdateSheet defaultCurrency={currency} />
-      <TrackerCreateSheet defaultCurrency={currency} />
-      <TrackerScheduleSheet /> */}
+      {/* <CustomerCreateSheet /> */}
+      {/* <CustomerEditSheet /> */}
 
-      <CustomerCreateSheet />
-      <CustomerEditSheet />
-
-      {/* <TransactionSheet />
-      <TransactionCreateSheet /> */}
-
-      {/* <AssistantModal />
-      <SelectBankAccountsModal />
-      <TrialEndedModal /> */}
-
-      {/* <DocumentSheet /> */}
-
-      {/* <ImportModal currencies={uniqueCurrencies} defaultCurrency={currency} /> */}
-      {/* <ConnectTransactionsModal countryCode={countryCode} /> */}
-
-      <InvoiceDetailsSheet />
-      <InvoiceSheet />
+      {/* <InvoiceDetailsSheet /> */}
+      <InvoiceSheet companyId={companyId} />
     </>
   );
 }

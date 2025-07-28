@@ -1,38 +1,31 @@
 "use client";
 
-import { useTRPC } from "@/trpc/client";
 import { Textarea } from "@/components/ui/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useApiMutation } from "@/hooks/useApiMutation";
 import { useEffect, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 type Props = {
-  id: string;
+  id: Id<"invoices">;
   defaultValue?: string | null;
 };
 
 export function InvoiceNote({ id, defaultValue }: Props) {
-  const queryClient = useQueryClient();
-  const trpc = useTRPC();
   const [value, setValue] = useState(defaultValue);
   const [debouncedValue] = useDebounceValue(value, 500);
 
-  const updateInvoiceMutation = useMutation(
-    trpc.invoice.update.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.getById.queryKey({ id }),
-        });
-      },
-    })
-  );
+  const updateInvoiceMutation = useApiMutation(api.invoices.update);
 
   useEffect(() => {
     if (debouncedValue !== defaultValue) {
       updateInvoiceMutation.mutate({
         id,
         internalNote:
-          debouncedValue && debouncedValue.length > 0 ? debouncedValue : null,
+          debouncedValue && debouncedValue.length > 0
+            ? debouncedValue
+            : undefined,
       });
     }
   }, [debouncedValue, defaultValue, id, updateInvoiceMutation]);

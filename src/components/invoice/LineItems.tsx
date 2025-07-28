@@ -1,10 +1,8 @@
 "use client";
 
-import { useTRPC } from "@/trpc/client";
 import { formatAmount } from "@/lib/format";
 import { calculateLineItemTotal } from "@/lib/invoice/calculate";
 import { Button } from "@/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
 import { Reorder, useDragControls } from "motion/react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { AmountInput } from "./AmountInput";
@@ -13,15 +11,20 @@ import type { InvoiceFormValues } from "./FormContext";
 import { Input } from "./Input";
 import { LabelInput } from "./LabelInput";
 import { QuantityInput } from "./QuantityInput";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
+import { GripVertical, Plus, X } from "lucide-react";
 
-export function LineItems() {
+type Props = {
+  companyId: Id<"company">;
+};
+
+export function LineItems({ companyId }: Props) {
   const { control } = useFormContext();
   const currency = useWatch({ control, name: "template.currency" });
 
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const includeDecimals = useWatch({
     control,
@@ -75,7 +78,8 @@ export function LineItems() {
           name="template.descriptionLabel"
           onSave={(value) => {
             updateTemplateMutation.mutate({
-              descriptionLabel: value,
+              template: { descriptionLabel: value },
+              companyId: companyId,
             });
           }}
           className="truncate"
@@ -85,7 +89,8 @@ export function LineItems() {
           name="template.quantityLabel"
           onSave={(value) => {
             updateTemplateMutation.mutate({
-              quantityLabel: value,
+              template: { quantityLabel: value },
+              companyId: companyId,
             });
           }}
           className="truncate"
@@ -95,7 +100,8 @@ export function LineItems() {
           name="template.priceLabel"
           onSave={(value) => {
             updateTemplateMutation.mutate({
-              priceLabel: value,
+              template: { priceLabel: value },
+              companyId: companyId,
             });
           }}
           className="truncate"
@@ -105,7 +111,8 @@ export function LineItems() {
           name="template.totalLabel"
           onSave={(value) => {
             updateTemplateMutation.mutate({
-              totalLabel: value,
+              template: { totalLabel: value },
+              companyId: companyId,
             });
           }}
           className="text-right truncate"
@@ -144,7 +151,7 @@ export function LineItems() {
         }
         className="flex items-center space-x-2 text-xs text-[#878787] font-mono"
       >
-        <Icons.Add />
+        <Plus className="size-4" />
         <span className="text-[11px]">Add item</span>
       </button>
     </div>
@@ -201,7 +208,7 @@ function LineItemRow({
           onPointerDown={(e) => controls.start(e)}
           variant="ghost"
         >
-          <Icons.DragIndicator className="size-4 text-[#878787]" />
+          <GripVertical className="size-4 text-[#878787]" />
         </Button>
       )}
 
@@ -236,7 +243,7 @@ function LineItemRow({
           className="absolute -right-9 -top-[4px] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-[#878787]"
           variant="ghost"
         >
-          <Icons.Close />
+          <X className="size-4" />
         </Button>
       )}
     </Reorder.Item>

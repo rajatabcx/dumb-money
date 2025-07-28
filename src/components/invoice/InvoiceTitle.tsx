@@ -1,25 +1,30 @@
 "use client";
 
-import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
 import { useFormContext } from "react-hook-form";
 import { Input } from "./Input";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function InvoiceTitle() {
+type Props = {
+  companyId: Id<"company">;
+};
+
+export function InvoiceTitle({ companyId }: Props) {
   const { watch } = useFormContext();
   const invoiceTitle = watch("template.title");
 
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   return (
     <Input
       className="text-[21px] font-medium mb-2 w-fit min-w-[100px] !border-none"
       name="template.title"
       onBlur={() => {
-        updateTemplateMutation.mutate({ title: invoiceTitle });
+        updateTemplateMutation.mutate({
+          template: { title: invoiceTitle },
+          companyId: companyId,
+        });
       }}
     />
   );

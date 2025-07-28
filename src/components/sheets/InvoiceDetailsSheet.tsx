@@ -1,7 +1,7 @@
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import React from "react";
-import { InvoiceDetails } from "../invoice-details";
+import { InvoiceDetails } from "../invoice/InvoiceDetails";
 
 export function InvoiceDetailsSheet() {
   const { invoiceId, type, setParams } = useInvoiceParams();

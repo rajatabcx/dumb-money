@@ -1,13 +1,14 @@
 "use client";
 
-import { InvoiceSuccess } from "@/components/invoice-success";
+import { InvoiceSuccess } from "@/components/invoice/InvoiceSuccess";
 import { Form } from "@/components/invoice/Form";
 import { SettingsMenu } from "@/components/invoice/SettingsMenu";
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
 import { SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useFormContext } from "react-hook-form";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function InvoiceContent() {
+export function InvoiceContent({ companyId }: { companyId: Id<"company"> }) {
   const { type } = useInvoiceParams();
   const { watch } = useFormContext();
   const templateSize = watch("template.size");
@@ -29,11 +30,11 @@ export function InvoiceContent() {
     >
       <SheetHeader className="mb-6 flex justify-between items-center flex-row">
         <div className="ml-auto">
-          <SettingsMenu />
+          <SettingsMenu companyId={companyId} />
         </div>
       </SheetHeader>
 
-      <Form />
+      <Form companyId={companyId} />
     </SheetContent>
   );
 }

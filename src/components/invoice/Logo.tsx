@@ -1,45 +1,49 @@
 "use client";
 
-import { useUpload } from "@/hooks/use-upload";
-import { useUserQuery } from "@/hooks/use-user";
-import { useTRPC } from "@/trpc/client";
-import { Icons } from "@/components/ui/icons";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/use-toast";
-import { useMutation } from "@tanstack/react-query";
 import { useFormContext } from "react-hook-form";
+import { toast } from "sonner";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
+import { X } from "lucide-react";
+import { downloadFileAction } from "@/actions/downloadFile";
 
-export function Logo() {
+type Props = {
+  companyId: Id<"company">;
+};
+
+export function Logo({ companyId }: Props) {
   const { watch, setValue } = useFormContext();
   const logoUrl = watch("template.logoUrl");
-  const { uploadFile, isLoading } = useUpload();
-  const { toast } = useToast();
+  const uploadUrl = useApiMutation(api.file.generateUploadUrl);
 
-  const { data: user } = useUserQuery();
-
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       try {
-        const { url } = await uploadFile({
-          file,
-          path: [user?.teamId ?? "", "invoice", file.name],
-          bucket: "avatars",
+        const fileUploadUrl = await uploadUrl.mutate();
+
+        const response = await fetch(fileUploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": file.type },
+          body: file,
         });
+
+        const { storageId } = await response.json();
+
+        const url = await downloadFileAction(storageId);
 
         setValue("template.logoUrl", url, { shouldValidate: true });
 
-        updateTemplateMutation.mutate({ logoUrl: url });
-      } catch (error) {
-        toast({
-          title: "Something went wrong, please try again.",
-          variant: "error",
+        updateTemplateMutation.mutate({
+          template: { logoUrl: url },
+          companyId: companyId,
         });
+      } catch (error) {
+        toast.error("Something went wrong, please try again.");
       }
     }
   };
@@ -47,7 +51,7 @@ export function Logo() {
   return (
     <div className="relative h-[80px] group">
       <label htmlFor="logo-upload" className="block h-full">
-        {isLoading ? (
+        {uploadUrl.isPending ? (
           <Skeleton className="w-full h-full" />
         ) : logoUrl ? (
           <>
@@ -65,10 +69,13 @@ export function Logo() {
                 setValue("template.logoUrl", undefined, {
                   shouldValidate: true,
                 });
-                updateTemplateMutation.mutate({ logoUrl: null });
+                updateTemplateMutation.mutate({
+                  template: { logoUrl: undefined },
+                  companyId: companyId,
+                });
               }}
             >
-              <Icons.Clear className="size-4" />
+              <X className="size-4" />
               <span className="text-xs font-medium">Remove</span>
             </button>
           </>
@@ -83,7 +90,7 @@ export function Logo() {
         accept="image/jpeg,image/jpg,image/png"
         className="hidden"
         onChange={handleUpload}
-        disabled={isLoading}
+        disabled={uploadUrl.isPending}
       />
     </div>
   );

@@ -3,8 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import React from "react";
-import { CustomerForm } from "../forms/customer-form";
+import { CustomerForm } from "@/components/customer/CreateForm";
 import { X } from "lucide-react";
+import { useCustomerParams } from "@/hooks/useCustomerParams";
 
 export function CustomerCreateSheet() {
   const { setParams, createCustomer } = useCustomerParams();

@@ -16,10 +16,17 @@ import { formatDistanceToNow } from "date-fns";
 import * as React from "react";
 import { ActionsMenu } from "./ActionsMenu";
 import { Eye } from "lucide-react";
+import { api } from "../../../convex/_generated/api";
+import { FunctionReturnType } from "convex/server";
+import { getWebsiteLogo } from "@/lib/invoice/logo";
 
-export type Invoice = NonNullable<
-  RouterOutputs["invoice"]["get"]["data"]
->[number];
+export type Invoice = FunctionReturnType<
+  typeof api.invoices.getCompanyInvoices
+>["page"][number];
+
+export type InvoiceTemplate = FunctionReturnType<
+  typeof api.invoices.defaultSettings
+>;
 
 export const columns: ColumnDef<Invoice>[] = [
   {
@@ -48,7 +55,12 @@ export const columns: ColumnDef<Invoice>[] = [
       return (
         <div className="flex flex-col space-y-1 w-[80px]">
           <span>
-            {date ? formatDate(date, table.options.meta?.dateFormat) : "-"}
+            {date
+              ? formatDate(
+                  date,
+                  (table.options.meta as any)?.dateFormat ?? null
+                )
+              : "-"}
           </span>
           {showDate && (
             <span className="text-xs text-muted-foreground">
@@ -197,7 +209,9 @@ export const columns: ColumnDef<Invoice>[] = [
       const date = row.original.issueDate;
       return (
         <span>
-          {date ? formatDate(date, table.options.meta?.dateFormat) : "-"}
+          {date
+            ? formatDate(date, (table.options.meta as any)?.dateFormat)
+            : "-"}
         </span>
       );
     },
@@ -214,14 +228,14 @@ export const columns: ColumnDef<Invoice>[] = [
       }
 
       if (!sentTo) {
-        return formatDate(sentAt, table.options.meta?.dateFormat);
+        return formatDate(sentAt, (table.options.meta as any)?.dateFormat);
       }
 
       return (
         <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger className="flex items-center space-x-2">
-              {formatDate(sentAt, table.options.meta?.dateFormat)}
+              {formatDate(sentAt, (table.options.meta as any)?.dateFormat)}
             </TooltipTrigger>
             <TooltipContent
               className="text-xs py-1 px-2"
@@ -243,7 +257,9 @@ export const columns: ColumnDef<Invoice>[] = [
         "text-right md:sticky md:right-0 bg-background group-hover:bg-[#F2F1EF] group-hover:dark:bg-secondary z-30 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px before:bg-border after:absolute after:left-[-24px] after:top-0 after:bottom-0 after:w-6 after:bg-gradient-to-r after:from-transparent after:to-background group-hover:after:to-muted after:z-[-1]",
     },
     cell: ({ row }) => {
-      return <ActionsMenu row={row.original} />;
+      return (
+        <ActionsMenu row={row.original} companyId={row.original.companyId} />
+      );
     },
   },
 ];

@@ -13,6 +13,7 @@ export function OpenInvoiceSheet() {
         variant="outline"
         size="icon"
         onClick={() => setParams({ type: "create" })}
+        className="cursor-pointer"
       >
         <Plus className="size-4" />
       </Button>

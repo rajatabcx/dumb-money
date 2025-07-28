@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/components/ui/cn";
+import { cn } from "@/lib/utils";
 import { Editor as BaseEditor } from "@/components/ui/editor";
 import type { Editor as EditorInstance, JSONContent } from "@tiptap/react";
 import { useCallback, useState } from "react";

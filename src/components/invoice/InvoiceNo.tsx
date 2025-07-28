@@ -1,21 +1,23 @@
 "use client";
 
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
-import { useTRPC } from "@/trpc/client";
-import { cn } from "@/components/ui/cn";
+import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "./Input";
 import { LabelInput } from "./LabelInput";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { useQuery } from "convex/react";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function InvoiceNo() {
+export function InvoiceNo({ companyId }: { companyId: Id<"company"> }) {
   const {
     watch,
     setError,
@@ -23,25 +25,18 @@ export function InvoiceNo() {
     formState: { errors },
   } = useFormContext();
   const invoiceNumber = watch("invoiceNumber");
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const { type } = useInvoiceParams();
 
-  const { data } = useQuery(
-    trpc.invoice.searchInvoiceNumber.queryOptions(
-      {
-        query: invoiceNumber,
-      },
-      {
-        // Only search for invoice number if we are creating a new invoice
-        enabled: type === "create" && invoiceNumber !== "",
-        // Never cache the result
-        gcTime: 0,
-      }
-    )
+  const data = useQuery(
+    api.invoices.searchInvoiceNumber,
+    type === "create" && invoiceNumber !== ""
+      ? {
+          query: invoiceNumber,
+          companyId,
+        }
+      : "skip"
   );
 
   useEffect(() => {
@@ -61,7 +56,10 @@ export function InvoiceNo() {
         <LabelInput
           name="template.invoiceNoLabel"
           onSave={(value) => {
-            updateTemplateMutation.mutate({ invoiceNoLabel: value });
+            updateTemplateMutation.mutate({
+              companyId,
+              template: { invoiceNoLabel: value },
+            });
           }}
           className="truncate"
         />

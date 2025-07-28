@@ -1,6 +1,5 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
-import { paginationOptsValidator } from "convex/server";
 
 export const getAll = query({
   args: {
@@ -23,5 +22,16 @@ export const getAll = query({
           .query("customers")
           .withIndex("by_company", (q) => q.eq("companyId", companyId))
           .collect();
+  },
+});
+
+export const getById = query({
+  args: {
+    id: v.id("customers"),
+  },
+  handler: async (ctx, args) => {
+    const { id } = args;
+
+    return await ctx.db.get(id);
   },
 });

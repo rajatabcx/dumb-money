@@ -1,4 +1,4 @@
-import { cn } from "@/components/ui/cn";
+import { cn } from "@/lib/utils";
 import { Input as BaseInput, type InputProps } from "@/components/ui/input";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";

@@ -2,7 +2,7 @@
 
 import { OpenURL } from "@/components/common/OpenUrl";
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
-import { downloadFile } from "@/lib/invoice/downloadFile";
+import { downloadFileAction } from "@/actions/downloadFile";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -18,82 +18,54 @@ import { useCopyToClipboard } from "usehooks-ts";
 import type { Invoice } from "./Columns";
 import { EllipsisVertical } from "lucide-react";
 import { toast } from "sonner";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 type Props = {
   row: Invoice;
+  companyId: Id<"company">;
 };
 
-export function ActionsMenu({ row }: Props) {
+export function ActionsMenu({ row, companyId }: Props) {
   const { setParams } = useInvoiceParams();
   const [, copy] = useCopyToClipboard();
 
-  const deleteInvoiceMutation = useMutation(
-    trpc.invoice.delete.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.infiniteQueryKey(),
-        });
+  const deleteInvoiceMutation = useApiMutation(api.invoices.deleteInvoice);
 
-        // Widget uses regular query
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.queryKey(),
-        });
+  const updateInvoiceMutation = useApiMutation(api.invoices.update);
 
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.getById.queryKey(),
-        });
+  //   trpc.invoice.duplicate.mutationOptions({
+  //     onSuccess: (data) => {
+  //       if (data) {
+  //         setParams({
+  //           invoiceId: data.id,
+  //           type: "edit",
+  //         });
+  //       }
 
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.invoiceSummary.queryKey(),
-        });
+  //       queryClient.invalidateQueries({
+  //         queryKey: trpc.invoice.get.infiniteQueryKey(),
+  //       });
 
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.defaultSettings.queryKey(),
-        });
-      },
-    })
-  );
-
-  const updateInvoiceMutation = useMutation(
-    trpc.invoice.update.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.infiniteQueryKey(),
-        });
-
-        // Widget uses regular query
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.queryKey(),
-        });
-      },
-    })
-  );
-
-  const duplicateInvoiceMutation = useMutation(
-    trpc.invoice.duplicate.mutationOptions({
-      onSuccess: (data) => {
-        if (data) {
-          setParams({
-            invoiceId: data.id,
-            type: "edit",
-          });
-        }
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.infiniteQueryKey(),
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.queryKey(),
-        });
-      },
-    })
-  );
+  //       queryClient.invalidateQueries({
+  //         queryKey: trpc.invoice.get.queryKey(),
+  //       });
+  //     },
+  //   })
+  // );
 
   const handleCopyLink = async () => {
     copy(`${process.env.NEXT_PUBLIC_BASE_URL}/i/${row.token}`);
 
     toast.success("Copied link to clipboard.");
+  };
+
+  const handleDownload = async () => {
+    const url = await downloadFileAction(row.storageId);
+    if (url) {
+      window.open(url, "_blank");
+    }
   };
 
   return (
@@ -132,23 +104,16 @@ export function ActionsMenu({ row }: Props) {
           </DropdownMenuItem>
 
           {row.status !== "draft" && (
-            <DropdownMenuItem
-              onClick={() => {
-                downloadFile(
-                  `/api/download/invoice?id=${row.id}`,
-                  `${row.invoiceNumber || "invoice"}.pdf`
-                );
-              }}
-            >
+            <DropdownMenuItem onClick={handleDownload}>
               Download
             </DropdownMenuItem>
           )}
 
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             onClick={() => duplicateInvoiceMutation.mutate({ id: row.id })}
           >
             Duplicate
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
 
           {row.status === "paid" && (
             <DropdownMenuItem
@@ -156,7 +121,7 @@ export function ActionsMenu({ row }: Props) {
                 updateInvoiceMutation.mutate({
                   id: row.id,
                   status: "unpaid",
-                  paidAt: null,
+                  paidAt: undefined,
                 })
               }
             >
@@ -210,7 +175,12 @@ export function ActionsMenu({ row }: Props) {
 
           {row.status === "canceled" && (
             <DropdownMenuItem
-              onClick={() => deleteInvoiceMutation.mutate({ id: row.id })}
+              onClick={() =>
+                deleteInvoiceMutation.mutate({
+                  id: row.id,
+                  companyId: row.companyId,
+                })
+              }
               className="text-[#FF3638]"
             >
               Delete
@@ -219,7 +189,12 @@ export function ActionsMenu({ row }: Props) {
 
           {row.status === "draft" && (
             <DropdownMenuItem
-              onClick={() => deleteInvoiceMutation.mutate({ id: row.id })}
+              onClick={() =>
+                deleteInvoiceMutation.mutate({
+                  id: row.id,
+                  companyId: row.companyId,
+                })
+              }
               className="text-[#FF3638]"
             >
               Delete

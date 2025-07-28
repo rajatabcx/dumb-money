@@ -1,6 +1,5 @@
 "use client";
 
-import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,17 +7,20 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Icons } from "@/components/ui/icons";
 import { SubmitButton as BaseSubmitButton } from "@/components/ui/submit-button";
-import { useMutation } from "@tanstack/react-query";
+import { useApiMutation } from "@/hooks/useApiMutation";
 import { useFormContext } from "react-hook-form";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
+import { ChevronDown } from "lucide-react";
 
 type Props = {
   isSubmitting: boolean;
   disabled?: boolean;
+  companyId: Id<"company">;
 };
 
-export function SubmitButton({ isSubmitting, disabled }: Props) {
+export function SubmitButton({ isSubmitting, disabled, companyId }: Props) {
   const { watch, setValue, formState } = useFormContext();
 
   const selectedOption = watch("template.deliveryType");
@@ -26,16 +28,16 @@ export function SubmitButton({ isSubmitting, disabled }: Props) {
 
   const invoiceNumberValid = !formState.errors.invoiceNumber;
 
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const handleOptionChange = (value: string) => {
     const deliveryType = value as "create" | "create_and_send";
 
     updateTemplateMutation.mutate({
-      deliveryType,
+      template: {
+        deliveryType,
+      },
+      companyId: companyId,
     });
 
     setValue("template.deliveryType", deliveryType, {
@@ -71,7 +73,7 @@ export function SubmitButton({ isSubmitting, disabled }: Props) {
             disabled={!isValid || isSubmitting || disabled}
             className="size-9 p-0 [&[data-state=open]>svg]:rotate-180"
           >
-            <Icons.ChevronDown className="size-4 transition-transform duration-200" />
+            <ChevronDown className="size-4 transition-transform duration-200" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" sideOffset={10}>

@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@/components/ui/cn";
+import { cn } from "@/lib/utils";
 import { Controller, useFormContext } from "react-hook-form";
-import { Editor } from "./Editor";
+import { Editor } from "@/components/invoice/Editor";
 import type { InvoiceFormValues } from "./FormContext";
 
 type Props = {

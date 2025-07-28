@@ -1,4 +1,4 @@
-import { cn } from "@/components/ui/cn";
+import { cn } from "@/lib/utils";
 import { QuantityInput as BaseQuantityInput } from "@/components/ui/quantity-input";
 import { useState } from "react";
 import { useController, useFormContext } from "react-hook-form";

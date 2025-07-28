@@ -1,34 +1,33 @@
 "use client";
 
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
-import { downloadFile } from "@/lib/download";
-import { useTRPC } from "@/trpc/client";
-import { getUrl } from "@/utils/environment";
-import { formatEditorContent } from "@midday/invoice/format-to-html";
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/ui/icons";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
-import { CopyInput } from "./copy-input";
-import { FormatAmount } from "./format-amount";
+import { motion } from "motion/react";
 import { InvoiceSheetHeader } from "./InvoiceSheetHeader";
-import { OpenURL } from "./open-url";
+import { FormatAmount } from "../common/FormatAmount";
+import { CopyInput } from "../ui/copy-input";
+import { Download } from "lucide-react";
+import { OpenURL } from "../common/OpenUrl";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { downloadFileAction } from "@/actions/downloadFile";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export function InvoiceSuccess() {
-  const trpc = useTRPC();
   const { invoiceId, setParams } = useInvoiceParams();
 
-  const { data: invoice } = useQuery(
-    trpc.invoice.getById.queryOptions(
-      {
-        id: invoiceId!,
-      },
-      {
-        enabled: !!invoiceId,
-      }
-    )
+  const invoice = useQuery(
+    api.invoices.getInvoice,
+    invoiceId ? { id: invoiceId } : "skip"
   );
+
+  const handleDownload = async (storageId?: Id<"_storage">) => {
+    const url = await downloadFileAction(storageId);
+    if (url) {
+      window.open(url, "_blank");
+    }
+  };
 
   if (!invoice) {
     return null;
@@ -139,21 +138,18 @@ export function InvoiceSuccess() {
               </span>
               <div className="flex w-full gap-2 mt-1">
                 <div className="flex-1 min-w-0">
-                  <CopyInput value={`${getUrl()}/i/${invoice.token}`} />
+                  <CopyInput
+                    value={`${process.env.NEXT_PUBLIC_APP_URL}/i/${invoice.token}`}
+                  />
                 </div>
 
                 <Button
                   variant="secondary"
                   className="size-[40px] hover:bg-secondary shrink-0"
-                  onClick={() => {
-                    downloadFile(
-                      `/api/download/invoice?id=${invoice.id}`,
-                      `${invoice.invoiceNumber}.pdf`
-                    );
-                  }}
+                  onClick={() => handleDownload(invoice.storageId)}
                 >
                   <div>
-                    <Icons.ArrowCoolDown className="size-4" />
+                    <Download className="size-4" />
                   </div>
                 </Button>
               </div>
@@ -177,7 +173,7 @@ export function InvoiceSuccess() {
       </div>
 
       <div className="flex mt-auto absolute bottom-6 justify-end gap-4 right-6 left-6">
-        <OpenURL href={`${getUrl()}/i/${invoice.token}`}>
+        <OpenURL href={`${process.env.NEXT_PUBLIC_APP_URL}/i/${invoice.token}`}>
           <Button variant="secondary">View invoice</Button>
         </OpenURL>
 

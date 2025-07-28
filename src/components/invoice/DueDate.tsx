@@ -1,4 +1,3 @@
-import { useTRPC } from "@/trpc/client";
 import { TZDate } from "@date-fns/tz";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -6,23 +5,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { LabelInput } from "./LabelInput";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function DueDate() {
+export function DueDate({ companyId }: { companyId: Id<"company"> }) {
   const { setValue, watch } = useFormContext();
   const dueDate = watch("dueDate");
   const dateFormat = watch("template.dateFormat");
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const trpc = useTRPC();
-  const updateTemplateMutation = useMutation(
-    trpc.invoiceTemplate.upsert.mutationOptions()
-  );
+  const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const handleSelect = (date: Date | undefined) => {
     if (date) {
@@ -40,7 +38,10 @@ export function DueDate() {
         <LabelInput
           name="template.dueDateLabel"
           onSave={(value) => {
-            updateTemplateMutation.mutate({ dueDateLabel: value });
+            updateTemplateMutation.mutate({
+              template: { dueDateLabel: value },
+              companyId: companyId,
+            });
           }}
         />
         <span className="text-[11px] text-[#878787] font-mono">:</span>
