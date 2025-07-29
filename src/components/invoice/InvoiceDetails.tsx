@@ -24,8 +24,9 @@ import { getWebsiteLogo } from "@/lib/invoice/logo";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { downloadFileAction } from "@/actions/downloadFile";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function InvoiceDetails() {
+export function InvoiceDetails({ companyId }: { companyId: Id<"company"> }) {
   const { invoiceId } = useInvoiceParams();
 
   const isOpen = invoiceId !== null;
@@ -48,7 +49,7 @@ export function InvoiceDetails() {
   }
 
   const {
-    id,
+    _id: id,
     customerId,
     amount,
     currency,
@@ -117,14 +118,14 @@ export function InvoiceDetails() {
 
           <div className="h-3 space-x-2">
             {vat !== 0 && vat != null && currency && (
-              <span className="text-[#606060] text-xs select-text">
+              <span className="text-muted-foreground text-xs select-text">
                 {template?.vatLabel}{" "}
                 <FormatAmount amount={vat} currency={currency} />
               </span>
             )}
 
             {tax !== 0 && tax != null && currency && (
-              <span className="text-[#606060] text-xs select-text">
+              <span className="text-muted-foreground text-xs select-text">
                 {template?.taxLabel}{" "}
                 <FormatAmount amount={tax} currency={currency} />
               </span>
@@ -133,7 +134,7 @@ export function InvoiceDetails() {
         </div>
       </div>
 
-      <InvoiceActions status={status} id={id} />
+      <InvoiceActions status={status} id={id} companyId={companyId} />
 
       <div className="h-full p-0 pb-[143px] overflow-y-auto scrollbar-hide">
         {status === "paid" && (
@@ -142,7 +143,7 @@ export function InvoiceDetails() {
               Paid on {paidAt && format(new Date(paidAt), "MMM dd")}
             </span>
             <span className="text-xs">
-              <span className="text-[#606060]">Marked as paid</span>
+              <span className="text-muted-foreground">Marked as paid</span>
             </span>
           </div>
         )}
@@ -153,20 +154,20 @@ export function InvoiceDetails() {
               Canceled on {updatedAt && format(new Date(updatedAt), "MMM dd")}
             </span>
             <span className="text-xs">
-              <span className="text-[#606060]">Marked as canceled</span>
+              <span className="text-muted-foreground">Marked as canceled</span>
             </span>
           </div>
         )}
 
         <div className="mt-6 flex flex-col space-y-4 border-t border-border pt-6">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-[#606060]">Due date</span>
+            <span className="text-sm text-muted-foreground">Due date</span>
             <span className="text-sm">
               <span>{dueDate && format(new Date(dueDate), "MMM dd")}</span>
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-[#606060]">Issue date</span>
+            <span className="text-sm text-muted-foreground">Issue date</span>
             <span className="text-sm">
               <span>{issueDate && format(new Date(issueDate), "MMM dd")}</span>
             </span>
@@ -174,7 +175,7 @@ export function InvoiceDetails() {
 
           {sentAt && (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[#606060]">Sent at</span>
+              <span className="text-sm text-muted-foreground">Sent at</span>
               <span className="text-sm">
                 <span>{sentAt && format(new Date(sentAt), "MMM dd")}</span>
               </span>
@@ -183,13 +184,13 @@ export function InvoiceDetails() {
 
           {sentTo && (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[#606060]">Sent to</span>
+              <span className="text-sm text-muted-foreground">Sent to</span>
               <span className="text-sm">{sentTo}</span>
             </div>
           )}
 
           <div className="flex justify-between items-center">
-            <span className="text-sm text-[#606060]">Invoice no.</span>
+            <span className="text-sm text-muted-foreground">Invoice no.</span>
             <span className="text-sm">
               <span>{invoiceNumber}</span>
             </span>
@@ -198,7 +199,7 @@ export function InvoiceDetails() {
 
         {customerId && (
           <div className="mt-6 flex flex-col space-y-2 border-t border-border pt-6">
-            <span className="text-sm text-[#606060]">Invoice link</span>
+            <span className="text-sm text-muted-foreground">Invoice link</span>
             <div className="flex w-full gap-2">
               <div className="flex-1 min-w-0 relative">
                 <CopyInput
@@ -210,7 +211,7 @@ export function InvoiceDetails() {
                   <OpenURL
                     href={`${process.env.NEXT_PUBLIC_BASE_URL}/i/${token}`}
                   >
-                    <ExternalLink />
+                    <ExternalLink className="size-4 text-muted-foreground" />
                   </OpenURL>
                 </div>
               </div>

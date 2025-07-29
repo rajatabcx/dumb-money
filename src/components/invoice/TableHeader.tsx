@@ -65,7 +65,7 @@ export function TableHeader({ table, tableScroll }: Props) {
           <TableHead className="w-[220px] min-w-[220px] md:sticky md:left-0 bg-background z-20 border-r border-border before:absolute before:right-0 before:top-0 before:bottom-0 before:w-px before:bg-border after:absolute after:right-[-24px] after:top-0 after:bottom-0 after:w-6 after:bg-gradient-to-l after:from-transparent after:to-background after:z-[-1]">
             <div className="flex items-center justify-between">
               <Button
-                className="p-0 hover:bg-transparent space-x-2"
+                className="p-0 hover:bg-transparent space-x-2 cursor-pointer"
                 variant="ghost"
                 onClick={() => createSortQuery("invoice_number")}
               >
@@ -92,7 +92,7 @@ export function TableHeader({ table, tableScroll }: Props) {
         {isVisible("status") && (
           <TableHead className="w-[150px]">
             <Button
-              className="p-0 hover:bg-transparent space-x-2"
+              className="p-0 hover:bg-transparent space-x-2 cursor-pointer"
               variant="ghost"
               onClick={() => createSortQuery("status")}
             >
@@ -126,7 +126,7 @@ export function TableHeader({ table, tableScroll }: Props) {
         {isVisible("customer") && (
           <TableHead className="min-w-[250px]">
             <Button
-              className="p-0 hover:bg-transparent space-x-2"
+              className="p-0 hover:bg-transparent space-x-2 cursor-pointer"
               variant="ghost"
               onClick={() => createSortQuery("customer")}
             >
@@ -143,7 +143,7 @@ export function TableHeader({ table, tableScroll }: Props) {
         {isVisible("amount") && (
           <TableHead className="w-[200px]">
             <Button
-              className="p-0 hover:bg-transparent space-x-2"
+              className="p-0 hover:bg-transparent space-x-2 cursor-pointer"
               variant="ghost"
               onClick={() => createSortQuery("amount")}
             >
@@ -201,7 +201,7 @@ export function TableHeader({ table, tableScroll }: Props) {
         {isVisible("issueDate") && (
           <TableHead className="w-[120px] min-w-[120px]">
             <Button
-              className="p-0 hover:bg-transparent space-x-2"
+              className="p-0 hover:bg-transparent space-x-2 cursor-pointer"
               variant="ghost"
               onClick={() => createSortQuery("issue_date")}
             >

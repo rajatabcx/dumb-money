@@ -17,7 +17,7 @@ export function LabelInput({ name, className, onSave }: Props) {
   return (
     <span
       className={cn(
-        "text-[11px] text-[#878787] min-w-10 font-mono outline-none",
+        "text-[11px] text-muted-foreground min-w-10 font-mono outline-none",
         className
       )}
       id={name}

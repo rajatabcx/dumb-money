@@ -39,13 +39,13 @@ function ActivityItem({
           <span
             className={cn(
               "text-sm",
-              completed ? "text-primary" : "text-[#666666]"
+              completed ? "text-primary" : "text-muted-foreground"
             )}
           >
             {label}
           </span>
 
-          <span className="text-sm text-[#666666]">
+          <span className="text-sm text-muted-foreground">
             {date &&
               format(
                 new Date(date),

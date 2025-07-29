@@ -149,7 +149,7 @@ export function LineItems({ companyId }: Props) {
             price: 0,
           })
         }
-        className="flex items-center space-x-2 text-xs text-[#878787] font-mono"
+        className="flex items-center space-x-2 text-xs text-muted-foreground font-mono cursor-pointer hover:text-primary"
       >
         <Plus className="size-4" />
         <span className="text-[11px]">Add item</span>
@@ -208,7 +208,7 @@ function LineItemRow({
           onPointerDown={(e) => controls.start(e)}
           variant="ghost"
         >
-          <GripVertical className="size-4 text-[#878787]" />
+          <GripVertical className="size-4 text-muted-foreground" />
         </Button>
       )}
 
@@ -218,7 +218,9 @@ function LineItemRow({
 
       <div className="flex items-center gap-2">
         <AmountInput name={`lineItems.${index}.price`} />
-        {includeUnits && <span className="text-xs text-[#878787]">/</span>}
+        {includeUnits && (
+          <span className="text-xs text-muted-foreground">/</span>
+        )}
         {includeUnits && <Input name={`lineItems.${index}.unit`} />}
       </div>
 
@@ -240,7 +242,7 @@ function LineItemRow({
         <Button
           type="button"
           onClick={() => handleRemove(index)}
-          className="absolute -right-9 -top-[4px] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-[#878787]"
+          className="absolute -right-9 -top-[4px] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-muted-foreground"
           variant="ghost"
         >
           <X className="size-4" />

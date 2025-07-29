@@ -81,7 +81,7 @@ export function CreateCompanyForm({
           name="name"
           render={({ field }) => (
             <FormItem className="mt-4 w-full">
-              <FormLabel className="text-xs text-[#666] font-normal">
+              <FormLabel className="text-xs text-muted-foreground font-normal">
                 Company name
               </FormLabel>
               <FormControl>
@@ -106,7 +106,7 @@ export function CreateCompanyForm({
           name="countryCode"
           render={({ field }) => (
             <FormItem className="mt-4 w-full">
-              <FormLabel className="text-xs text-[#666] font-normal">
+              <FormLabel className="text-xs text-muted-foreground font-normal">
                 Country
               </FormLabel>
               <FormControl className="w-full">
@@ -128,7 +128,7 @@ export function CreateCompanyForm({
           name="baseCurrency"
           render={({ field }) => (
             <FormItem className="mt-4 border-b border-border pb-4">
-              <FormLabel className="text-xs text-[#666] font-normal">
+              <FormLabel className="text-xs text-muted-foreground font-normal">
                 Base currency
               </FormLabel>
               <FormControl>

@@ -28,9 +28,10 @@ import { VatNumberInput } from "../common/VatNumberInput";
 import { FunctionReturnType } from "convex/server";
 import { api } from "../../../convex/_generated/api";
 import { useApiMutation } from "@/hooks/useApiMutation";
+import { Id } from "../../../convex/_generated/dataModel";
+import { useEffect } from "react";
 
 const formSchema = z.object({
-  id: z.string().uuid().optional(),
   name: z.string().min(2, {
     message: "Name must be at least 1 characters.",
   }),
@@ -89,54 +90,19 @@ const excludedDomains = [
 
 type Props = {
   data?: FunctionReturnType<typeof api.customer.getById>;
+  companyId: Id<"company">;
 };
 
-export function CustomerForm({ data }: Props) {
+export function CustomerForm({ data, companyId }: Props) {
   const isEdit = !!data;
 
   const { setParams: setCustomerParams, name } = useCustomerParams();
   const { setParams: setInvoiceParams, type } = useInvoiceParams();
   const fromInvoice = type === "create" || type === "edit";
 
-  const upsertCustomerMutation = useApiMutation(
-    api.customer.upsert.mutationOptions({})
-  );
+  const upsertCustomerMutation = useApiMutation(api.customer.upsert);
 
-  // onSuccess: (data) => {
-
-  //   // Close the customer form
-  //   setCustomerParams(null);
-
-  //   // If the customer is created from an invoice, set the customer as the selected customer
-  //   if (data && fromInvoice) {
-  //     setInvoiceParams({ selectedCustomerId: data.id });
-  //   }
-  // },
-  const form = useZodForm(formSchema, {
-    defaultValues: {
-      id: data?.id,
-      name: name ?? data?.name ?? undefined,
-      email: data?.email ?? undefined,
-      billingEmail: data?.billingEmail ?? null,
-      website: data?.website ?? undefined,
-      addressLine1: data?.addressLine1 ?? undefined,
-      addressLine2: data?.addressLine2 ?? undefined,
-      city: data?.city ?? undefined,
-      state: data?.state ?? undefined,
-      country: data?.country ?? undefined,
-      countryCode: data?.countryCode ?? undefined,
-      zip: data?.zip ?? undefined,
-      phone: data?.phone ?? undefined,
-      contact: data?.contact ?? undefined,
-      note: data?.note ?? undefined,
-      vatNumber: data?.vatNumber ?? undefined,
-      tags:
-        data?.tags?.map((tag) => ({
-          id: tag?.id ?? "",
-          value: tag?.name ?? "",
-        })) ?? undefined,
-    },
-  });
+  const form = useZodForm(formSchema);
 
   const handleEmailBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const email = e.target.value.trim();
@@ -149,33 +115,54 @@ export function CustomerForm({ data }: Props) {
     }
   };
 
-  const handleSubmit = (data: z.infer<typeof formSchema>) => {
+  const handleSubmit = async (formData: z.infer<typeof formSchema>) => {
     const formattedData = {
-      ...data,
-      id: data.id || undefined,
-      addressLine1: data.addressLine1 || null,
-      addressLine2: data.addressLine2 || null,
-      billingEmail: data.billingEmail || null,
-      city: data.city || null,
-      state: data.state || null,
-      country: data.country || null,
-      contact: data.contact || null,
-      note: data.note || null,
-      website: data.website || null,
-      phone: data.phone || null,
-      zip: data.zip || null,
-      vatNumber: data.vatNumber || null,
-      tags: data.tags?.length
-        ? data.tags.map((tag) => ({
-            id: tag.id,
-            name: tag.value,
-          }))
-        : undefined,
-      countryCode: data.countryCode || null,
+      ...formData,
+      addressLine1: formData.addressLine1 || undefined,
+      addressLine2: formData.addressLine2 || undefined,
+      billingEmail: formData.billingEmail || undefined,
+      city: formData.city || undefined,
+      state: formData.state || undefined,
+      country: formData.country || undefined,
+      contact: formData.contact || undefined,
+      note: formData.note || undefined,
+      website: formData.website || undefined,
+      phone: formData.phone || undefined,
+      zip: formData.zip || undefined,
+      vatNumber: formData.vatNumber || undefined,
+      countryCode: formData.countryCode || undefined,
+      companyId,
+      customerId: data?._id,
     };
 
-    upsertCustomerMutation.mutate(formattedData);
+    const response = await upsertCustomerMutation.mutate(formattedData);
+    setCustomerParams(null);
+    if (data && fromInvoice) {
+      setInvoiceParams({ selectedCustomerId: response });
+    }
   };
+
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        name: name ?? data?.name ?? undefined,
+        email: data?.email ?? undefined,
+        billingEmail: data?.billingEmail ?? null,
+        website: data?.website ?? undefined,
+        addressLine1: data?.addressLine1 ?? undefined,
+        addressLine2: data?.addressLine2 ?? undefined,
+        city: data?.city ?? undefined,
+        state: data?.state ?? undefined,
+        country: data?.country ?? undefined,
+        countryCode: data?.countryCode ?? undefined,
+        zip: data?.zip ?? undefined,
+        phone: data?.phone ?? undefined,
+        contact: data?.contact ?? undefined,
+        note: data?.note ?? undefined,
+        vatNumber: data?.vatNumber ?? undefined,
+      });
+    }
+  }, [data]);
 
   return (
     <Form {...form}>
@@ -196,7 +183,7 @@ export function CustomerForm({ data }: Props) {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Name
                           </FormLabel>
                           <FormControl>
@@ -218,7 +205,7 @@ export function CustomerForm({ data }: Props) {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Email
                           </FormLabel>
                           <FormControl>
@@ -241,7 +228,7 @@ export function CustomerForm({ data }: Props) {
                       name="billingEmail"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Billing Email
                           </FormLabel>
                           <FormControl>
@@ -274,7 +261,7 @@ export function CustomerForm({ data }: Props) {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Phone
                           </FormLabel>
                           <FormControl>
@@ -296,7 +283,7 @@ export function CustomerForm({ data }: Props) {
                       name="website"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Website
                           </FormLabel>
                           <FormControl>
@@ -317,7 +304,7 @@ export function CustomerForm({ data }: Props) {
                       name="contact"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Contact person
                           </FormLabel>
                           <FormControl>
@@ -346,7 +333,7 @@ export function CustomerForm({ data }: Props) {
                       name="addressLine1"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Address Line 1
                           </FormLabel>
                           <FormControl>
@@ -367,7 +354,7 @@ export function CustomerForm({ data }: Props) {
                       name="addressLine2"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Address Line 2
                           </FormLabel>
                           <FormControl>
@@ -389,7 +376,7 @@ export function CustomerForm({ data }: Props) {
                         name="country"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs text-[#878787] font-normal">
+                            <FormLabel className="text-xs text-muted-foreground font-normal">
                               Country
                             </FormLabel>
                             <FormControl>
@@ -411,7 +398,7 @@ export function CustomerForm({ data }: Props) {
                         name="city"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs text-[#878787] font-normal">
+                            <FormLabel className="text-xs text-muted-foreground font-normal">
                               City
                             </FormLabel>
                             <FormControl>
@@ -434,7 +421,7 @@ export function CustomerForm({ data }: Props) {
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs text-[#878787] font-normal">
+                            <FormLabel className="text-xs text-muted-foreground font-normal">
                               State / Province
                             </FormLabel>
                             <FormControl>
@@ -455,7 +442,7 @@ export function CustomerForm({ data }: Props) {
                         name="zip"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs text-[#878787] font-normal">
+                            <FormLabel className="text-xs text-muted-foreground font-normal">
                               ZIP Code / Postal Code
                             </FormLabel>
                             <FormControl>
@@ -475,7 +462,7 @@ export function CustomerForm({ data }: Props) {
                     {/* <div className="mt-6">
                       <Label
                         htmlFor="tags"
-                        className="mb-2 text-xs text-[#878787] font-normal block"
+                        className="mb-2 text-xs text-muted-foreground font-normal block"
                       >
                         Expense Tags
                       </Label>
@@ -527,7 +514,7 @@ export function CustomerForm({ data }: Props) {
                         name="vatNumber"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs text-[#878787] font-normal">
+                            <FormLabel className="text-xs text-muted-foreground font-normal">
                               Tax ID / VAT Number
                             </FormLabel>
                             <FormControl>
@@ -547,7 +534,7 @@ export function CustomerForm({ data }: Props) {
                       name="note"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs text-[#878787] font-normal">
+                          <FormLabel className="text-xs text-muted-foreground font-normal">
                             Note
                           </FormLabel>
                           <FormControl>

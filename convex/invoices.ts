@@ -390,8 +390,6 @@ export const defaultSettings = query({
       subtotalLabel: template?.subtotalLabel ?? defaultTemplate.subtotalLabel,
       issueDateLabel:
         template?.issueDateLabel ?? defaultTemplate.issueDateLabel,
-      total_summary_label:
-        template?.totalSummaryLabel ?? defaultTemplate.totalSummaryLabel,
       dueDateLabel: template?.dueDateLabel ?? defaultTemplate.dueDateLabel,
       discountLabel: template?.discountLabel ?? defaultTemplate.discountLabel,
       descriptionLabel:
@@ -742,8 +740,11 @@ export const searchInvoiceNumber = query({
     const { companyId, query } = args;
     const result = await ctx.db
       .query("invoices")
-      .withSearchIndex("invoice_number", (q) =>
-        q.search("invoiceNumber", query).eq("companyId", companyId)
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("companyId"), companyId),
+          q.eq(q.field("invoiceNumber"), query)
+        )
       )
       .first();
 
@@ -769,5 +770,51 @@ export const deleteInvoice = mutation({
     }
 
     await ctx.db.delete(id);
+  },
+});
+
+export const sendReminder = mutation({
+  args: {
+    id: v.id("invoices"),
+    date: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { id, date } = args;
+
+    await ctx.db.patch(id, {
+      reminderSentAt: date,
+    });
+  },
+});
+
+export const getInvoiceByToken = query({
+  args: {
+    token: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { token } = args;
+
+    const invoice = await ctx.db
+      .query("invoices")
+      .withIndex("by_token", (q) => q.eq("token", token))
+      .first();
+
+    if (!invoice) {
+      return null;
+    }
+
+    const customer = invoice.customerId
+      ? await ctx.db.get(invoice.customerId)
+      : null;
+
+    const company = invoice.companyId
+      ? await ctx.db.get(invoice.companyId)
+      : null;
+
+    return {
+      ...invoice,
+      customer,
+      company,
+    };
   },
 });

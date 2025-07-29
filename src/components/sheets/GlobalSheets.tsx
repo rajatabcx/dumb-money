@@ -9,10 +9,10 @@ import { Id } from "../../../convex/_generated/dataModel";
 export function GlobalSheets({ companyId }: { companyId: Id<"company"> }) {
   return (
     <>
-      {/* <CustomerCreateSheet /> */}
-      {/* <CustomerEditSheet /> */}
+      <CustomerCreateSheet companyId={companyId} />
+      <CustomerEditSheet companyId={companyId} />
 
-      {/* <InvoiceDetailsSheet /> */}
+      <InvoiceDetailsSheet companyId={companyId} />
       <InvoiceSheet companyId={companyId} />
     </>
   );

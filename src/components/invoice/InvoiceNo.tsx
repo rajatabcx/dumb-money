@@ -25,6 +25,8 @@ export function InvoiceNo({ companyId }: { companyId: Id<"company"> }) {
     formState: { errors },
   } = useFormContext();
   const invoiceNumber = watch("invoiceNumber");
+
+  console.log(invoiceNumber);
   const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const { type } = useInvoiceParams();
@@ -38,6 +40,8 @@ export function InvoiceNo({ companyId }: { companyId: Id<"company"> }) {
         }
       : "skip"
   );
+
+  console.log(data);
 
   useEffect(() => {
     if (data) {
@@ -63,7 +67,7 @@ export function InvoiceNo({ companyId }: { companyId: Id<"company"> }) {
           }}
           className="truncate"
         />
-        <span className="text-[11px] text-[#878787] font-mono flex-shrink-0">
+        <span className="text-[11px] text-muted-foreground font-mono flex-shrink-0">
           :
         </span>
       </div>

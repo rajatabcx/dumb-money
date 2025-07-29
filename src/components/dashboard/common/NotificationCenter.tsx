@@ -20,7 +20,7 @@ function EmptyState({ description }) {
       <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
         <Icons.Inbox size={18} />
       </div>
-      <p className="text-[#606060] text-sm">{description}</p>
+      <p className="text-muted-foreground text-sm">{description}</p>
     </div>
   );
 }
@@ -52,7 +52,7 @@ function NotificationItem({
             </div>
             <div>
               <p className="text-sm">{description}</p>
-              <span className="text-xs text-[#606060]">
+              <span className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(createdAt))} ago
               </span>
             </div>
@@ -87,7 +87,7 @@ function NotificationItem({
             </div>
             <div>
               <p className="text-sm">{description}</p>
-              <span className="text-xs text-[#606060]">
+              <span className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(createdAt))} ago
               </span>
             </div>
@@ -122,7 +122,7 @@ function NotificationItem({
             </div>
             <div>
               <p className="text-sm">{description}</p>
-              <span className="text-xs text-[#606060]">
+              <span className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(createdAt))} ago
               </span>
             </div>
@@ -157,7 +157,7 @@ function NotificationItem({
             </div>
             <div>
               <p className="text-sm">{description}</p>
-              <span className="text-xs text-[#606060]">
+              <span className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(createdAt))} ago
               </span>
             </div>
@@ -245,7 +245,7 @@ export function NotificationCenter() {
               className="rounded-full bg-ransparent hover:bg-accent"
               onClick={() => setOpen(false)}
             >
-              <Icons.Settings className="text-[#606060]" size={16} />
+              <Icons.Settings className="text-muted-foreground" size={16} />
             </Button>
           </Link>
 

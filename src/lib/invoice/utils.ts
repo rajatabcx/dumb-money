@@ -1,9 +1,10 @@
-import type { RouterOutputs } from "@api/trpc/routers/_app";
-import type { InvoiceFormValues } from "../components/invoice/FormContext";
+import type { InvoiceFormValues } from "@/components/invoice/FormContext";
+import { api } from "../../../convex/_generated/api";
+import { FunctionReturnType } from "convex/server";
 
-export const transformCustomerToContent = (
-  customer?: RouterOutputs["customers"]["getById"]
-) => {
+type Customer = FunctionReturnType<typeof api.customer.getById>;
+
+export const transformCustomerToContent = (customer?: Customer) => {
   if (!customer) return null;
 
   const content = [];

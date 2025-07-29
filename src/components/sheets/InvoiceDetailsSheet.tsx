@@ -2,8 +2,13 @@ import { useInvoiceParams } from "@/hooks/useInvoiceParams";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import React from "react";
 import { InvoiceDetails } from "../invoice/InvoiceDetails";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function InvoiceDetailsSheet() {
+export function InvoiceDetailsSheet({
+  companyId,
+}: {
+  companyId: Id<"company">;
+}) {
   const { invoiceId, type, setParams } = useInvoiceParams();
 
   const isOpen = Boolean(invoiceId && type === "details");
@@ -14,7 +19,7 @@ export function InvoiceDetailsSheet() {
       onOpenChange={() => setParams({ invoiceId: null, type: null })}
     >
       <SheetContent>
-        <InvoiceDetails />
+        <InvoiceDetails companyId={companyId} />
       </SheetContent>
     </Sheet>
   );

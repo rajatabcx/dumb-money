@@ -25,7 +25,7 @@ export function InvoiceStatus({
       className={cn(
         "px-2 py-0.5 rounded-full cursor-default font-mono inline-flex max-w-full text-[11px]",
         (status === "draft" || status === "canceled") &&
-          "text-[#878787] bg-[#F2F1EF] text-[10px] dark:text-[#878787] dark:bg-[#1D1D1D]",
+          "text-muted-foreground bg-[#F2F1EF] text-[10px] dark:text-muted-foreground dark:bg-[#1D1D1D]",
         status === "overdue" &&
           "bg-[#FFD02B]/10 text-[#FFD02B] dark:bg-[#FFD02B]/10 dark:text-[#FFD02B]",
         status === "paid" &&

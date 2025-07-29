@@ -204,3 +204,11 @@
   height: 0;
   pointer-events: none;
 }
+
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

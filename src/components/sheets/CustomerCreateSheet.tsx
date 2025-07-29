@@ -3,11 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import React from "react";
-import { CustomerForm } from "@/components/customer/CreateForm";
+import { CustomerForm } from "@/components/customer/Form";
 import { X } from "lucide-react";
 import { useCustomerParams } from "@/hooks/useCustomerParams";
+import { Id } from "../../../convex/_generated/dataModel";
 
-export function CustomerCreateSheet() {
+export function CustomerCreateSheet({
+  companyId,
+}: {
+  companyId: Id<"company">;
+}) {
   const { setParams, createCustomer } = useCustomerParams();
 
   const isOpen = Boolean(createCustomer);
@@ -27,7 +32,7 @@ export function CustomerCreateSheet() {
           </Button>
         </SheetHeader>
 
-        <CustomerForm />
+        <CustomerForm companyId={companyId} />
       </SheetContent>
     </Sheet>
   );

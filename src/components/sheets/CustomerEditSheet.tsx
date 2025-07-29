@@ -1,7 +1,6 @@
 "use client";
 
 import { useCustomerParams } from "@/hooks/useCustomerParams";
-import { useTRPC } from "@/trpc/client";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,43 +19,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
-import { CustomerForm } from "../forms/customer-form";
+import { CustomerForm } from "@/components/customer/Form";
+import { Id } from "../../../convex/_generated/dataModel";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { useQuery } from "convex/react";
+import { MoreVertical } from "lucide-react";
 
-export function CustomerEditSheet() {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+export function CustomerEditSheet({ companyId }: { companyId: Id<"company"> }) {
   const { setParams, customerId } = useCustomerParams();
 
   const isOpen = Boolean(customerId);
 
-  const { data: customer } = useQuery(
-    trpc.customers.getById.queryOptions(
-      { id: customerId! },
-      {
-        enabled: isOpen,
-        staleTime: 0, // Always consider data stale so it always refetches
-        initialData: () => {
-          const pages = queryClient
-            .getQueriesData({ queryKey: trpc.customers.get.infiniteQueryKey() })
-            // @ts-expect-error
-            .flatMap(([, data]) => data?.pages ?? [])
-            .flatMap((page) => page.data ?? []);
-
-          return pages.find((d) => d.id === customerId);
-        },
-      }
-    )
+  const customer = useQuery(
+    api.customer.getById,
+    isOpen
+      ? {
+          id: customerId!,
+        }
+      : "skip"
   );
 
-  const deleteCustomerMutation = useMutation(
-    trpc.customers.delete.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.customers.get.infiniteQueryKey(),
-        });
-      },
-    })
-  );
+  const deleteCustomerMutation = useApiMutation(api.customer.deleteCustomer);
 
   return (
     <Sheet open={isOpen} onOpenChange={() => setParams(null)}>
@@ -67,8 +51,8 @@ export function CustomerEditSheet() {
           {customerId && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button type="button">
-                  <Icons.MoreVertical className="size-5" />
+                <button type="button" className="cursor-pointer p-2">
+                  <MoreVertical className="size-5" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent sideOffset={10} align="end">
@@ -109,7 +93,11 @@ export function CustomerEditSheet() {
           )}
         </SheetHeader>
 
-        <CustomerForm data={customer} key={customer?.id} />
+        <CustomerForm
+          data={customer}
+          key={customer?._id}
+          companyId={companyId}
+        />
       </SheetContent>
     </Sheet>
   );

@@ -53,10 +53,12 @@ export function InvoiceSuccess() {
           >
             <div className="flex space-x-1 items-center">
               <div className="flex items-center">
-                <span className="text-[11px] text-[#878787] font-mono">
+                <span className="text-[11px] text-muted-foreground font-mono">
                   {invoice.template.invoiceNoLabel}
                 </span>
-                <span className="text-[11px] text-[#878787] font-mono">:</span>
+                <span className="text-[11px] text-muted-foreground font-mono">
+                  :
+                </span>
               </div>
 
               <span className="font-mono text-[11px]">
@@ -66,10 +68,12 @@ export function InvoiceSuccess() {
 
             <div className="flex space-x-1 items-center">
               <div className="flex items-center">
-                <span className="text-[11px] text-[#878787] font-mono">
+                <span className="text-[11px] text-muted-foreground font-mono">
                   {invoice.template.dueDateLabel}
                 </span>
-                <span className="text-[11px] text-[#878787] font-mono">:</span>
+                <span className="text-[11px] text-muted-foreground font-mono">
+                  :
+                </span>
               </div>
 
               <span className="font-mono text-[11px]">
@@ -89,7 +93,7 @@ export function InvoiceSuccess() {
             <span className="text-[11px] font-mono">
               {invoice.template.customerLabel}
             </span>
-            <div className="font-mono text-[#878787]">
+            <div className="font-mono text-muted-foreground">
               {/* @ts-expect-error - customerDetails is JSONB */}
               {formatEditorContent(invoice.customerDetails)}
             </div>
@@ -101,7 +105,7 @@ export function InvoiceSuccess() {
             transition={{ delay: 0.4, duration: 0.3 }}
             className="flex items-center justify-between mt-10 border-b border-border border-dashed pb-4"
           >
-            <span className="text-[11px] text-[#878787] font-mono">
+            <span className="text-[11px] text-muted-foreground font-mono">
               {invoice.template.totalSummaryLabel}
             </span>
 
@@ -125,7 +129,7 @@ export function InvoiceSuccess() {
 
             {invoice.sentTo && (
               <div className="flex flex-col space-y-1">
-                <span className="text-[11px] text-[#878787] font-mono">
+                <span className="text-[11px] text-muted-foreground font-mono">
                   Invoice sent to
                 </span>
                 <span className="text-sm">{invoice.sentTo}</span>
@@ -133,7 +137,7 @@ export function InvoiceSuccess() {
             )}
 
             <div>
-              <span className="text-[11px] text-[#878787] font-mono">
+              <span className="text-[11px] text-muted-foreground font-mono">
                 Share link
               </span>
               <div className="flex w-full gap-2 mt-1">

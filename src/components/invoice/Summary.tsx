@@ -124,7 +124,7 @@ export function Summary({ companyId }: { companyId: Id<"company"> }) {
             });
           }}
         />
-        <span className="text-right font-mono text-[11px] text-[#878787]">
+        <span className="text-right font-mono text-[11px] text-muted-foreground">
           <FormatAmount
             amount={subTotal}
             maximumFractionDigits={maximumFractionDigits}
@@ -150,7 +150,7 @@ export function Summary({ companyId }: { companyId: Id<"company"> }) {
             placeholder="0"
             allowNegative={false}
             name="discount"
-            className="text-right font-mono text-[11px] text-[#878787] border-none"
+            className="text-right font-mono text-[11px] text-muted-foreground border-none"
           />
         </div>
       )}
@@ -172,7 +172,7 @@ export function Summary({ companyId }: { companyId: Id<"company"> }) {
             <VATInput />
           </div>
 
-          <span className="text-right font-mono text-[11px] text-[#878787]">
+          <span className="text-right font-mono text-[11px] text-muted-foreground">
             <FormatAmount
               amount={totalVAT}
               maximumFractionDigits={maximumFractionDigits}
@@ -200,7 +200,7 @@ export function Summary({ companyId }: { companyId: Id<"company"> }) {
             <TaxInput />
           </div>
 
-          <span className="text-right font-mono text-[11px] text-[#878787]">
+          <span className="text-right font-mono text-[11px] text-muted-foreground">
             <FormatAmount
               amount={totalTax}
               maximumFractionDigits={maximumFractionDigits}

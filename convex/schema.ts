@@ -49,7 +49,6 @@ export default defineSchema({
     phone: v.optional(v.string()),
     vatNumber: v.optional(v.string()),
     countryCode: v.optional(v.string()),
-    token: v.string(),
     contact: v.optional(v.string()),
   })
     .index("by_company", ["companyId"])
@@ -161,6 +160,7 @@ export default defineSchema({
       searchField: "status",
       filterFields: ["companyId"],
     })
+    .index("by_token", ["token"])
     .searchIndex("invoice_number", {
       searchField: "invoiceNumber",
       filterFields: ["companyId"],

@@ -15,7 +15,7 @@ export async function getNextInvoiceNumber(
   const totalInvoices = invoices.length;
 
   // Add 1 to get next invoice number and pad with zeros
-  const nextNumber = (totalInvoices + 1).toString().padStart(2, "0");
+  const nextNumber = (totalInvoices + 1).toString().padStart(3, "0");
 
   return `INV-${nextNumber}`;
 }

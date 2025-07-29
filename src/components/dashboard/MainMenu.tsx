@@ -229,7 +229,7 @@ const Item = ({ item, isActive, isExpanded, onSelect }: ItemProps) => {
           />
 
           {/* Icon - always in same position from sidebar edge */}
-          <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center dark:text-[#666666] text-black group-hover:!text-primary pointer-events-none">
+          <div className="absolute top-0 left-[15px] w-[40px] h-[40px] flex items-center justify-center dark:text-muted-foreground text-black group-hover:!text-primary pointer-events-none">
             <div className={cn(isActive && "dark:!text-white")}>
               <Icon />
             </div>
@@ -239,7 +239,7 @@ const Item = ({ item, isActive, isExpanded, onSelect }: ItemProps) => {
             <div className="absolute top-0 left-[55px] right-[8px] h-[40px] flex items-center justify-between pointer-events-none">
               <span
                 className={cn(
-                  "text-sm font-medium transition-opacity duration-200 ease-in-out text-[#666] group-hover:text-primary",
+                  "text-sm font-medium transition-opacity duration-200 ease-in-out text-muted-foreground group-hover:text-primary",
                   "whitespace-nowrap overflow-hidden",
                   isActive && "text-primary"
                 )}

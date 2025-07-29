@@ -79,8 +79,9 @@ export const columns: ColumnDef<Invoice>[] = [
       const name = customer?.name || row.original.customerName;
       const viewAt = row.original.viewedAt;
 
-      if (!name) return "-";
+      console.log(getWebsiteLogo(customer?.website));
 
+      if (!name) return "-";
       return (
         <div className="flex items-center space-x-2">
           <Avatar className="size-5">
@@ -102,7 +103,7 @@ export const columns: ColumnDef<Invoice>[] = [
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger className="flex items-center space-x-2">
-                  <Eye className="size-4 text-[#878787]" />
+                  <Eye className="size-4 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent
                   className="text-xs py-1 px-2"

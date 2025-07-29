@@ -58,16 +58,19 @@ export function FormContext({
   });
 
   useEffect(() => {
-    form.reset({
-      ...(defaultSettings ?? {}),
-      ...(data ?? {}),
-      template: {
-        ...(defaultSettings?.template ?? {}),
-        ...(data?.template ?? {}),
-      },
-      customerId: data?.customerId ?? defaultSettings?.customerId ?? undefined,
-    });
-  }, [data, defaultSettings]);
+    if (!form.getValues("invoiceNumber")) {
+      form.reset({
+        ...(defaultSettings ?? {}),
+        ...(data ?? {}),
+        template: {
+          ...(defaultSettings?.template ?? {}),
+          ...(data?.template ?? {}),
+        },
+        customerId:
+          data?.customerId ?? defaultSettings?.customerId ?? undefined,
+      });
+    }
+  }, [data, defaultSettings, form]);
 
   return <FormProvider {...form}>{children}</FormProvider>;
 }

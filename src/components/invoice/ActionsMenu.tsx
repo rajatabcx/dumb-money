@@ -166,7 +166,7 @@ export function ActionsMenu({ row, companyId }: Props) {
                     status: "canceled",
                   })
                 }
-                className="text-[#FF3638]"
+                className="text-destructive"
               >
                 Cancel
               </DropdownMenuItem>
@@ -181,7 +181,7 @@ export function ActionsMenu({ row, companyId }: Props) {
                   companyId: row.companyId,
                 })
               }
-              className="text-[#FF3638]"
+              className="text-destructive"
             >
               Delete
             </DropdownMenuItem>
@@ -195,7 +195,7 @@ export function ActionsMenu({ row, companyId }: Props) {
                   companyId: row.companyId,
                 })
               }
-              className="text-[#FF3638]"
+              className="text-destructive"
             >
               Delete
             </DropdownMenuItem>

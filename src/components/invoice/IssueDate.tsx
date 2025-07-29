@@ -47,7 +47,7 @@ export function IssueDate({ companyId }: Props) {
             });
           }}
         />
-        <span className="text-[11px] text-[#878787] font-mono">:</span>
+        <span className="text-[11px] text-muted-foreground font-mono">:</span>
       </div>
 
       <Popover open={isOpen} onOpenChange={setIsOpen} modal>

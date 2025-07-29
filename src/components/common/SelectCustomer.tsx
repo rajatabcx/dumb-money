@@ -53,7 +53,7 @@ export function SelectCustomer({ companyId }: { companyId: Id<"company"> }) {
         type="button"
         variant="ghost"
         onClick={() => setCustomerParams({ createCustomer: true })}
-        className="font-mono text-[#434343] p-0 text-[11px] h-auto hover:bg-transparent cursor-pointer"
+        className="font-mono text-primary p-0 text-[11px] h-auto hover:bg-transparent cursor-pointer"
       >
         Select customer
       </Button>
@@ -67,7 +67,7 @@ export function SelectCustomer({ companyId }: { companyId: Id<"company"> }) {
           type="button"
           variant="ghost"
           aria-expanded={open}
-          className="font-mono text-[#434343] p-0 text-[11px] h-auto hover:bg-transparent cursor-pointer"
+          className="font-mono text-primary p-0 text-[11px] h-auto hover:bg-transparent cursor-pointer"
         >
           Select customer
         </Button>
@@ -112,7 +112,7 @@ export function SelectCustomer({ companyId }: { companyId: Id<"company"> }) {
                       e.stopPropagation();
                       setCustomerParams({ customerId: item.id });
                     }}
-                    className="ml-auto text-xs opacity-0 group-hover:opacity-50 hover:opacity-100"
+                    className="ml-auto text-xs opacity-0 group-hover:opacity-50 hover:opacity-100 cursor-pointer"
                   >
                     Edit
                   </button>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useInvoiceParams } from "@/hooks/useInvoiceParams";
-import { useTRPC } from "@/trpc/react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,75 +23,29 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Bell, MoreHorizontal, Pencil } from "lucide-react";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 type Props = {
   status: string;
-  id: string;
+  id: Id<"invoices">;
+  companyId: Id<"company">;
 };
 
-export function InvoiceActions({ status, id }: Props) {
-  const trpc = useTRPC();
-  const queryClient = useQueryClient();
+export function InvoiceActions({ status, id, companyId }: Props) {
   const { setParams } = useInvoiceParams();
 
-  const updateInvoiceMutation = useMutation(
-    trpc.invoice.update.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.infiniteQueryKey(),
-        });
+  const updateInvoiceMutation = useApiMutation(api.invoices.update);
 
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.getById.queryKey(),
-        });
+  const deleteInvoiceMutation = useApiMutation(api.invoices.deleteInvoice);
 
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.invoiceSummary.queryKey(),
-        });
-      },
-    })
-  );
-
-  const deleteInvoiceMutation = useMutation(
-    trpc.invoice.delete.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.infiniteQueryKey(),
-        });
-
-        // Widget uses regular query
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.get.queryKey(),
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.getById.queryKey(),
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.invoiceSummary.queryKey(),
-        });
-
-        queryClient.invalidateQueries({
-          queryKey: trpc.invoice.defaultSettings.queryKey(),
-        });
-      },
-    })
-  );
-
-  const sendReminderMutation = useMutation(
-    trpc.invoice.remind.mutationOptions({
-      onSuccess: () => {
-        toast.success("Reminder sent");
-      },
-    })
-  );
+  const sendReminderMutation = useApiMutation(api.invoices.sendReminder);
 
   const handleDeleteInvoice = () => {
-    deleteInvoiceMutation.mutate({ id });
+    deleteInvoiceMutation.mutate({ id: id as Id<"invoices">, companyId });
     setParams(null);
   };
 
@@ -106,7 +59,7 @@ export function InvoiceActions({ status, id }: Props) {
               <Button
                 size="icon"
                 variant="secondary"
-                className="hover:bg-secondary"
+                className="hover:bg-secondary cursor-pointer cursor-pointer"
               >
                 <MoreHorizontal className="size-4" />
               </Button>
@@ -117,7 +70,7 @@ export function InvoiceActions({ status, id }: Props) {
                   updateInvoiceMutation.mutate({
                     id,
                     status: "unpaid",
-                    paidAt: null,
+                    paidAt: undefined,
                   })
                 }
               >
@@ -176,7 +129,7 @@ export function InvoiceActions({ status, id }: Props) {
           <Button
             size="sm"
             variant="secondary"
-            className="flex items-center space-x-2 hover:bg-secondary w-full"
+            className="flex items-center space-x-2 hover:bg-secondary w-full cursor-pointer"
             onClick={() => setParams({ invoiceId: id, type: "edit" })}
           >
             <Pencil className="size-3.5" />
@@ -188,7 +141,7 @@ export function InvoiceActions({ status, id }: Props) {
               <Button
                 size="sm"
                 variant="secondary"
-                className="hover:bg-secondary"
+                className="hover:bg-secondary cursor-pointer cursor-pointer"
               >
                 <MoreHorizontal className="size-4" />
               </Button>
@@ -249,7 +202,7 @@ export function InvoiceActions({ status, id }: Props) {
           <Button
             size="sm"
             variant="secondary"
-            className="flex items-center space-x-2 hover:bg-secondary w-full"
+            className="flex items-center space-x-2 hover:bg-secondary w-full cursor-pointer"
             onClick={() => setParams({ invoiceId: id, type: "edit" })}
           >
             <Pencil className="size-3.5" />
@@ -261,7 +214,7 @@ export function InvoiceActions({ status, id }: Props) {
               <Button
                 size="sm"
                 variant="secondary"
-                className="hover:bg-secondary"
+                className="hover:bg-secondary cursor-pointer"
               >
                 <MoreHorizontal className="size-4" />
               </Button>

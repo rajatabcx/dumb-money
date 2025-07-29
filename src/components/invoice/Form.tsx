@@ -64,11 +64,38 @@ export function Form({ companyId }: { companyId: Id<"company"> }) {
 
   const handleDraftInvoice = async () => {
     const currentFormValues = form.getValues();
-    const result = await draftInvoiceMutation.mutate(
-      transformFormValuesToDraft(currentFormValues)
+
+    const data = transformFormValuesToDraft(
+      currentFormValues as InvoiceFormValues
     );
 
-    if (!!result) {
+    const result = await draftInvoiceMutation.mutate({
+      companyId,
+      dueDate: data.dueDate,
+      invoiceNumber: data.invoiceNumber,
+      issueDate: data.issueDate,
+      template: data.template,
+      customerId: data.customerId,
+      amount: data.amount,
+      vat: data.vat,
+      id: data.id,
+      bottomBlock: data.bottomBlock,
+      topBlock: data.topBlock,
+      lineItems: data.lineItems,
+      fromDetails: data.fromDetails,
+      customerDetails: data.customerDetails,
+      noteDetails: data.noteDetails,
+      paymentDetails: data.paymentDetails,
+      customerName: data.customerName,
+      token: data.token,
+      discount: data.discount,
+      tax: data.tax,
+      logoUrl: data.logoUrl,
+      invoiceId: invoiceId ?? undefined,
+      subtotal: data.subtotal,
+    });
+
+    if (!!result && !invoiceId) {
       setParams({ type: "edit", invoiceId: result });
       setLastUpdated(new Date());
     }

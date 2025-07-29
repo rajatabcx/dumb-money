@@ -245,7 +245,7 @@ export function FilterList({
             return (
               <motion.li key={key} variants={itemVariant}>
                 <Button
-                  className="h-9 px-2 bg-secondary hover:bg-secondary font-normal text-[#878787] flex space-x-1 items-center group rounded-none"
+                  className="h-9 px-2 bg-secondary hover:bg-secondary font-normal text-muted-foreground flex space-x-1 items-center group rounded-none"
                   onClick={() => handleOnRemove(filterKey)}
                 >
                   <X className="scale-0 group-hover:scale-100 transition-all w-0 group-hover:w-4" />

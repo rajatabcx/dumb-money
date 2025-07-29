@@ -1,4 +1,5 @@
 import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
+import { Id } from "../../convex/_generated/dataModel";
 
 export function useCustomerParams() {
   const [params, setParams] = useQueryStates({
@@ -8,8 +9,17 @@ export function useCustomerParams() {
     q: parseAsString,
   });
 
-  return {
+  const modifiedParams = {
     ...params,
+  } as {
+    customerId: Id<"customers"> | null;
+    createCustomer: boolean;
+    name: string | null;
+    q: string | null;
+  };
+
+  return {
+    ...modifiedParams,
     setParams,
   };
 }

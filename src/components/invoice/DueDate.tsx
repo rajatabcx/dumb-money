@@ -44,7 +44,7 @@ export function DueDate({ companyId }: { companyId: Id<"company"> }) {
             });
           }}
         />
-        <span className="text-[11px] text-[#878787] font-mono">:</span>
+        <span className="text-[11px] text-muted-foreground font-mono">:</span>
       </div>
       <Popover open={isOpen} onOpenChange={setIsOpen} modal>
         <PopoverTrigger className="text-primary text-[11px] font-mono whitespace-nowrap flex">
