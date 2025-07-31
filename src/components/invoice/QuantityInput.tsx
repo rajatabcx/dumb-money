@@ -20,7 +20,7 @@ export function QuantityInput({
   const isPlaceholder = !value && !isFocused;
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <BaseQuantityInput
         {...props}
         value={value}

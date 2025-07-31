@@ -216,7 +216,7 @@ function LineItemRow({
 
       <QuantityInput name={`lineItems.${index}.quantity`} />
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 h-full">
         <AmountInput name={`lineItems.${index}.price`} />
         {includeUnits && (
           <span className="text-xs text-muted-foreground">/</span>

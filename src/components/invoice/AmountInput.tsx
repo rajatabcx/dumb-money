@@ -23,7 +23,7 @@ export function AmountInput({
   const isPlaceholder = !value && !isFocused;
 
   return (
-    <div className="relative font-mono">
+    <div className="relative font-mono h-full">
       <CurrencyInput
         autoComplete="off"
         value={value}
