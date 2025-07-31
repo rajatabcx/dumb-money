@@ -5,11 +5,13 @@ import { OpenInvoiceSheet } from "./OpenInvoiceSheet";
 
 export function InvoiceHeader({ companyId }: { companyId: Id<"company"> }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-start justify-between gap-2">
       <InvoiceSearchFilter companyId={companyId} />
 
-      <div className="hidden sm:flex space-x-2">
-        <InvoiceColumnVisibility />
+      <div className="flex gap-2">
+        <div className="hidden sm:block">
+          <InvoiceColumnVisibility />
+        </div>
         <OpenInvoiceSheet />
       </div>
     </div>

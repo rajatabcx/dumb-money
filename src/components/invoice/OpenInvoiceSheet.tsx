@@ -8,15 +8,13 @@ export function OpenInvoiceSheet() {
   const { setParams } = useInvoiceParams();
 
   return (
-    <div>
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => setParams({ type: "create" })}
-        className="cursor-pointer"
-      >
-        <Plus className="size-4" />
-      </Button>
-    </div>
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={() => setParams({ type: "create" })}
+      className="cursor-pointer"
+    >
+      <Plus className="size-4" />
+    </Button>
   );
 }
