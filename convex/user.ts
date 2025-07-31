@@ -28,17 +28,16 @@ export const upsertUser = mutation({
     const user = await getCurrentUser(ctx);
 
     if (user) {
+      // update user
       await ctx.db.patch(user._id, {
         firstName: args.firstName,
         lastName: args.lastName,
         profileImage: args.profileImage,
+        locale: args.locale ?? "en",
         weekStartsOnMonday: args.weekStartsOnMonday ?? false,
         timeFormat: args.timeFormat ?? 24,
-        dateFormat: args.dateFormat,
+        dateFormat: args.dateFormat ?? "dd/MM/yyyy",
         timezone: args.timezone,
-        companyId: args.companyId,
-        email: args.email,
-        locale: args.locale ?? "en",
       });
     } else {
       await ctx.db.insert("users", {
