@@ -24,7 +24,7 @@ export function InvoiceRow({ row }: Props) {
             key={cell.id}
             className={cn(
               index === 2 && "w-[50px] min-w-[50px]",
-              cell.column.columnDef.meta?.className
+              (cell.column.columnDef.meta as any)?.className
             )}
             onClick={() => {
               if (index !== row.getVisibleCells().length - 1) {

@@ -1,8 +1,8 @@
 import { Text, View } from "@react-pdf/renderer";
-import type { LineItem } from "../../../types";
-import { calculateLineItemTotal } from "../../../utils/calculate";
-import { formatCurrencyForPDF } from "../../../utils/pdf-format";
 import { Description } from "./description";
+import { formatCurrencyForPDF } from "@/lib/invoice/pdf-format";
+import { calculateLineItemTotal } from "@/lib/invoice/calculate";
+import { LineItem } from "@/lib/invoice/types";
 
 type Props = {
   lineItems: LineItem[];

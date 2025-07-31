@@ -5,6 +5,7 @@ import { useQuery } from "convex/react";
 import { format } from "date-fns";
 import React from "react";
 import { api } from "../../../convex/_generated/api";
+import { FunctionReturnType } from "convex/server";
 
 type ActivityItemProps = {
   label: string;
@@ -59,7 +60,7 @@ function ActivityItem({
 }
 
 type Props = {
-  data: RouterOutputs["invoice"]["getById"];
+  data: FunctionReturnType<typeof api.invoices.getInvoice>;
 };
 
 export function InvoiceActivity({ data }: Props) {
@@ -68,10 +69,10 @@ export function InvoiceActivity({ data }: Props) {
 
   return (
     <ul>
-      {data?.createdAt && (
+      {data?._creationTime && (
         <ActivityItem
           label="Created"
-          date={data?.createdAt}
+          date={new Date(data?._creationTime).toISOString()}
           completed
           timeFormat={user?.timeFormat ?? null}
         />

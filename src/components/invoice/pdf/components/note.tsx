@@ -1,6 +1,6 @@
 import { Text, View } from "@react-pdf/renderer";
-import type { EditorDoc } from "../../../types";
 import { EditorContent } from "./editor-content";
+import { EditorDoc } from "@/lib/invoice/types";
 
 type Props = {
   content?: EditorDoc | null;

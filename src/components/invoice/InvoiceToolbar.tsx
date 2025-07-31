@@ -1,6 +1,6 @@
 "use client";
 
-import { downloadFile } from "@/lib/download";
+import { downloadFileAction } from "@/actions/downloadFile";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -8,21 +8,35 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { motion } from "framer-motion";
-import { MdContentCopy, MdOutlineFileDownload } from "react-icons/md";
+import { Copy, Download } from "lucide-react";
+import { motion } from "motion/react";
 import { useCopyToClipboard } from "usehooks-ts";
+import { Id } from "../../../convex/_generated/dataModel";
 
 type Props = {
   token: string;
   invoiceNumber: string;
+  storageId?: Id<"_storage">;
 };
 
-export default function InvoiceToolbar({ token, invoiceNumber }: Props) {
+export default function InvoiceToolbar({
+  token,
+  invoiceNumber,
+  storageId,
+}: Props) {
   const [, copy] = useCopyToClipboard();
 
   const handleCopyLink = () => {
     const url = window.location.href;
     copy(url);
+  };
+
+  const handleDownload = async (storageId?: Id<"_storage">) => {
+    if (!storageId) return;
+    const url = await downloadFileAction(storageId);
+    if (url) {
+      window.open(url, "_blank");
+    }
   };
 
   return (
@@ -41,13 +55,10 @@ export default function InvoiceToolbar({ token, invoiceNumber }: Props) {
                 size="icon"
                 className="rounded-full size-8"
                 onClick={() => {
-                  downloadFile(
-                    `/api/download/invoice?token=${token}`,
-                    `${invoiceNumber}.pdf`
-                  );
+                  handleDownload(storageId);
                 }}
               >
-                <MdOutlineFileDownload className="size-[18px]" />
+                <Download className="size-[18px]" />
               </Button>
             </TooltipTrigger>
             <TooltipContent
@@ -68,7 +79,7 @@ export default function InvoiceToolbar({ token, invoiceNumber }: Props) {
                 className="rounded-full size-8"
                 onClick={handleCopyLink}
               >
-                <MdContentCopy />
+                <Copy className="size-[18px]" />
               </Button>
             </TooltipTrigger>
             <TooltipContent
