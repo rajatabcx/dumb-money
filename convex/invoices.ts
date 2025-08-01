@@ -23,16 +23,24 @@ export type UpdateInvoiceParams = {
   paidAt?: string;
   internalNote?: string;
   reminderSentAt?: string;
+  storageId?: Id<"_storage">;
 };
 
-export async function updateInvoice(
+export async function updateInvoiceHelper(
   ctx: MutationCtx,
   params: UpdateInvoiceParams
 ) {
   const { id, ...rest } = params;
 
+  const invoice = await ctx.db.get(id);
+  if (!invoice) {
+    throw new ConvexError("Invoice not found");
+  }
+
   return await ctx.db.patch(id, {
+    ...invoice,
     ...rest,
+    updatedAt: new Date().toISOString(),
   });
 }
 
@@ -695,7 +703,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const { companyId, invoiceId, deliveryType } = args;
 
-    await updateInvoice(ctx, {
+    await updateInvoiceHelper(ctx, {
       id: invoiceId,
       status: "unpaid",
     });
@@ -709,7 +717,7 @@ export const create = mutation({
   },
 });
 
-export const update = mutation({
+export const updateInvoice = mutation({
   args: {
     id: v.id("invoices"),
     status: v.optional(
@@ -722,11 +730,21 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const { id, status, paidAt, internalNote, storageId } = args;
 
-    await ctx.db.patch(id, {
-      status,
-      paidAt,
-      internalNote,
-      storageId,
+    const patch: {
+      status?: "paid" | "canceled" | "unpaid";
+      paidAt?: string;
+      internalNote?: string;
+      storageId?: Id<"_storage">;
+    } = {};
+
+    if (status !== undefined) patch.status = status;
+    if (paidAt !== undefined) patch.paidAt = paidAt;
+    if (internalNote !== undefined) patch.internalNote = internalNote;
+    if (storageId !== undefined) patch.storageId = storageId;
+
+    return await updateInvoiceHelper(ctx, {
+      id,
+      ...patch,
     });
   },
 });
@@ -781,7 +799,8 @@ export const sendReminder = mutation({
   handler: async (ctx, args) => {
     const { id, date } = args;
 
-    await ctx.db.patch(id, {
+    return await updateInvoiceHelper(ctx, {
+      id,
       reminderSentAt: date,
     });
   },

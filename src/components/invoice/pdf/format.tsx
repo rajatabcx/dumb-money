@@ -1,6 +1,6 @@
 import { Link, Text, View } from "@react-pdf/renderer";
 import type { Style } from "@react-pdf/types";
-import { EditorDoc } from "@/lib/invoice/types";
+import type { EditorDoc } from "@/lib/invoice/types";
 
 type PDFTextStyle = Style & {
   fontFamily?: string;

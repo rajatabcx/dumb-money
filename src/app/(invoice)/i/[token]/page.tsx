@@ -94,19 +94,6 @@ export default async function Page(props: Props) {
     notFound();
   }
 
-  //   if (viewer) {
-  //     try {
-  //       const decryptedEmail = decrypt(viewer);
-
-  //       if (decryptedEmail === invoice?.customer?.email) {
-  //         // Only update the invoice viewed_at if the user is a viewer
-  //         waitUntil(updateInvoiceViewedAt(invoice.id!));
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-
   // If the invoice is draft and the user is not logged in, return 404 or if the invoice is not found
   if (!invoice || (invoice.status === "draft" && !user)) {
     notFound();

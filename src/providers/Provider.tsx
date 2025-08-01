@@ -10,7 +10,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 export default function Provider({ children }: { children: React.ReactNode }) {
   return (
     <ConvexClientProvider>
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NuqsAdapter>{children}</NuqsAdapter>
         </ThemeProvider>

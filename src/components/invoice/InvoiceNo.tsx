@@ -26,7 +26,6 @@ export function InvoiceNo({ companyId }: { companyId: Id<"company"> }) {
   } = useFormContext();
   const invoiceNumber = watch("invoiceNumber");
 
-  console.log(invoiceNumber);
   const updateTemplateMutation = useApiMutation(api.invoices.upsertTemplate);
 
   const { type } = useInvoiceParams();
@@ -40,8 +39,6 @@ export function InvoiceNo({ companyId }: { companyId: Id<"company"> }) {
         }
       : "skip"
   );
-
-  console.log(data);
 
   useEffect(() => {
     if (data) {
@@ -72,26 +69,24 @@ export function InvoiceNo({ companyId }: { companyId: Id<"company"> }) {
         </span>
       </div>
 
-      <TooltipProvider delayDuration={100}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div>
-              <Input
-                name="invoiceNumber"
-                className={cn(
-                  "w-28 flex-shrink p-0 border-none text-[11px] h-4.5 overflow-hidden",
-                  errors.invoiceNumber ? "text-red-500" : ""
-                )}
-              />
-            </div>
-          </TooltipTrigger>
-          {errors.invoiceNumber && (
-            <TooltipContent className="text-xs px-3 py-1.5">
-              <p>Invoice number already exists</p>
-            </TooltipContent>
-          )}
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Input
+              name="invoiceNumber"
+              className={cn(
+                "w-28 flex-shrink p-0 border-none text-[11px] h-4.5 overflow-hidden",
+                errors.invoiceNumber ? "text-red-500" : ""
+              )}
+            />
+          </div>
+        </TooltipTrigger>
+        {errors.invoiceNumber && (
+          <TooltipContent className="text-xs px-3 py-1.5">
+            <p>Invoice number already exists</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
     </div>
   );
 }

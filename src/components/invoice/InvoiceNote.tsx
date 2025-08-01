@@ -16,7 +16,7 @@ export function InvoiceNote({ id, defaultValue }: Props) {
   const [value, setValue] = useState(defaultValue);
   const [debouncedValue] = useDebounceValue(value, 500);
 
-  const updateInvoiceMutation = useApiMutation(api.invoices.update);
+  const updateInvoiceMutation = useApiMutation(api.invoices.updateInvoice);
 
   useEffect(() => {
     if (debouncedValue !== defaultValue) {

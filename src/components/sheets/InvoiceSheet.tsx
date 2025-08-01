@@ -34,7 +34,7 @@ export function InvoiceSheet({ companyId }: { companyId: Id<"company"> }) {
 
   return (
     <Sheet open={isOpen} onOpenChange={handleOnOpenChange}>
-      <FormContext defaultSettings={defaultSettings} data={data}>
+      <FormContext defaultSettings={defaultSettings} data={data} type={type}>
         <InvoiceContent companyId={companyId} />
       </FormContext>
     </Sheet>

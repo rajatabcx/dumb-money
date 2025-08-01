@@ -79,8 +79,6 @@ export const columns: ColumnDef<Invoice>[] = [
       const name = customer?.name || row.original.customerName;
       const viewAt = row.original.viewedAt;
 
-      console.log(getWebsiteLogo(customer?.website));
-
       if (!name) return "-";
       return (
         <div className="flex items-center space-x-2">
@@ -100,22 +98,20 @@ export const columns: ColumnDef<Invoice>[] = [
           <span className="truncate">{name}</span>
 
           {viewAt && row.original.status !== "paid" && (
-            <TooltipProvider delayDuration={0}>
-              <Tooltip>
-                <TooltipTrigger className="flex items-center space-x-2">
-                  <Eye className="size-4 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent
-                  className="text-xs py-1 px-2"
-                  side="right"
-                  sideOffset={5}
-                >
-                  {viewAt
-                    ? `Viewed ${formatDistanceToNow(new Date(viewAt))} ago`
-                    : ""}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="flex items-center space-x-2">
+                <Eye className="size-4 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent
+                className="text-xs py-1 px-2"
+                side="right"
+                sideOffset={5}
+              >
+                {viewAt
+                  ? `Viewed ${formatDistanceToNow(new Date(viewAt))} ago`
+                  : ""}
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
       );
@@ -233,20 +229,18 @@ export const columns: ColumnDef<Invoice>[] = [
       }
 
       return (
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger className="flex items-center space-x-2">
-              {formatDate(sentAt, (table.options.meta as any)?.dateFormat)}
-            </TooltipTrigger>
-            <TooltipContent
-              className="text-xs py-1 px-2"
-              side="right"
-              sideOffset={5}
-            >
-              {sentTo}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger className="flex items-center space-x-2">
+            {formatDate(sentAt, (table.options.meta as any)?.dateFormat)}
+          </TooltipTrigger>
+          <TooltipContent
+            className="text-xs py-1 px-2"
+            side="right"
+            sideOffset={5}
+          >
+            {sentTo}
+          </TooltipContent>
+        </Tooltip>
       );
     },
   },

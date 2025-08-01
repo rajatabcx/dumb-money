@@ -32,10 +32,14 @@ export function CopyInput({ value, className }: Props) {
         className
       )}
     >
-      <div className="pr-7 text-muted-foreground text-sm line-clamp-1">
+      <div className="pr-7 text-muted-foreground text-sm line-clamp-1 truncate">
         {value}
       </div>
-      <button type="button" onClick={handleClipboard} className="block">
+      <button
+        type="button"
+        onClick={handleClipboard}
+        className="block cursor-pointer"
+      >
         <motion.div
           className="absolute right-4 top-2.5"
           initial={{ opacity: 1, scale: 1 }}

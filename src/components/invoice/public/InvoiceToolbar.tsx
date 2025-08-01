@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Copy, Download } from "lucide-react";
@@ -19,11 +18,7 @@ type Props = {
   storageId?: Id<"_storage">;
 };
 
-export default function InvoiceToolbar({
-  token,
-  invoiceNumber,
-  storageId,
-}: Props) {
+export default function InvoiceToolbar({ storageId }: Props) {
   const [, copy] = useCopyToClipboard();
 
   const handleCopyLink = () => {
@@ -50,47 +45,43 @@ export default function InvoiceToolbar({
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
     >
       <div className="backdrop-filter backdrop-blur-lg dark:bg-[#1A1A1A]/80 bg-[#F6F6F3]/80 rounded-full pl-2 pr-4 py-3 h-10 flex items-center justify-center border-[0.5px] border-border">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full size-8"
-                onClick={downloadFile}
-              >
-                <Download className="size-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent
-              sideOffset={15}
-              className="text-[10px] px-2 py-1 rounded-sm font-medium"
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full size-8 cursor-pointer"
+              onClick={downloadFile}
             >
-              <p>Download</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              <Download className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent
+            sideOffset={15}
+            className="text-[10px] px-2 py-1 rounded-sm font-medium"
+          >
+            <p>Download</p>
+          </TooltipContent>
+        </Tooltip>
 
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full size-8"
-                onClick={handleCopyLink}
-              >
-                <Copy className="size-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent
-              sideOffset={15}
-              className="text-[10px] px-2 py-1 rounded-sm font-medium"
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full size-8 cursor-pointer"
+              onClick={handleCopyLink}
             >
-              <p>Copy link</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+              <Copy className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent
+            sideOffset={15}
+            className="text-[10px] px-2 py-1 rounded-sm font-medium"
+          >
+            <p>Copy link</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </motion.div>
   );

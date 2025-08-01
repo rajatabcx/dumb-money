@@ -45,12 +45,14 @@ type FormContextProps = {
   children: React.ReactNode;
   data?: Invoice;
   defaultSettings?: InvoiceTemplate;
+  type?: "create" | "success" | "edit" | "details" | null;
 };
 
 export function FormContext({
   children,
   data,
   defaultSettings,
+  type,
 }: FormContextProps) {
   const form = useZodForm(invoiceFormSchema, {
     defaultValues: defaultSettings ?? {},
@@ -58,19 +60,20 @@ export function FormContext({
   });
 
   useEffect(() => {
-    if (!form.getValues("invoiceNumber")) {
-      form.reset({
-        ...(defaultSettings ?? {}),
-        ...(data ?? {}),
-        template: {
-          ...(defaultSettings?.template ?? {}),
-          ...(data?.template ?? {}),
-        },
-        customerId:
-          data?.customerId ?? defaultSettings?.customerId ?? undefined,
-      });
+    if (!!form.getValues("invoiceNumber") && type === "create") {
+      return;
     }
-  }, [data, defaultSettings, form]);
+
+    form.reset({
+      ...(defaultSettings ?? {}),
+      ...(data ?? {}),
+      template: {
+        ...(defaultSettings?.template ?? {}),
+        ...(data?.template ?? {}),
+      },
+      customerId: data?.customerId ?? defaultSettings?.customerId ?? undefined,
+    });
+  }, [data, defaultSettings, form, type]);
 
   return <FormProvider {...form}>{children}</FormProvider>;
 }

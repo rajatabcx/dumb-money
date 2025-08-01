@@ -33,7 +33,7 @@ export function ActionsMenu({ row, companyId }: Props) {
 
   const deleteInvoiceMutation = useApiMutation(api.invoices.deleteInvoice);
 
-  const updateInvoiceMutation = useApiMutation(api.invoices.update);
+  const updateInvoiceMutation = useApiMutation(api.invoices.updateInvoice);
 
   //   trpc.invoice.duplicate.mutationOptions({
   //     onSuccess: (data) => {
