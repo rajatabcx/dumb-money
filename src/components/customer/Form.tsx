@@ -135,10 +135,10 @@ export function CustomerForm({ data, companyId }: Props) {
       customerId: data?._id,
     };
 
-    const response = await upsertCustomerMutation.mutate(formattedData);
+    const customerId = await upsertCustomerMutation.mutate(formattedData);
     setCustomerParams(null);
-    if (data && fromInvoice) {
-      setInvoiceParams({ selectedCustomerId: response });
+    if (customerId) {
+      setInvoiceParams({ selectedCustomerId: customerId });
     }
   };
 

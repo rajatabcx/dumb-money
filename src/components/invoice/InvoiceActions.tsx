@@ -28,6 +28,9 @@ import { Bell, MoreHorizontal, Pencil } from "lucide-react";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
+import { sendInvoiceReminderEmail } from "@/actions/sendInvoiceReminder";
+import { useState } from "react";
+import { sendInvoicePaidEmail } from "@/actions/sendInvoicePaid";
 
 type Props = {
   status: string;
@@ -36,9 +39,12 @@ type Props = {
 };
 
 export function InvoiceActions({ status, id, companyId }: Props) {
+  const [isSendingReminder, setIsSendingReminder] = useState(false);
+  const [isSendingPaid, setIsSendingPaid] = useState(false);
   const { setParams } = useInvoiceParams();
 
   const updateInvoiceMutation = useApiMutation(api.invoices.updateInvoice);
+  const markAsUnpaidMutation = useApiMutation(api.invoices.markAsUnpaid);
 
   const deleteInvoiceMutation = useApiMutation(api.invoices.deleteInvoice);
 
@@ -47,6 +53,33 @@ export function InvoiceActions({ status, id, companyId }: Props) {
   const handleDeleteInvoice = () => {
     deleteInvoiceMutation.mutate({ id: id as Id<"invoices">, companyId });
     setParams(null);
+  };
+
+  const handleSendReminder = () => {
+    sendReminderMutation.mutate({ id, date: new Date().toISOString() });
+    setIsSendingReminder(true);
+    sendInvoiceReminderEmail(id);
+    setIsSendingReminder(false);
+  };
+
+  const handleMarkAsPaid = (date: Date | undefined) => {
+    setIsSendingPaid(true);
+    if (date) {
+      updateInvoiceMutation.mutate({
+        id,
+        status: "paid",
+        paidAt: date.toISOString(),
+      });
+    } else {
+      // NOTE: Today is undefined
+      updateInvoiceMutation.mutate({
+        id,
+        status: "paid",
+        paidAt: new Date().toISOString(),
+      });
+    }
+    sendInvoicePaidEmail(id);
+    setIsSendingPaid(false);
   };
 
   switch (status) {
@@ -68,10 +101,8 @@ export function InvoiceActions({ status, id, companyId }: Props) {
               <DropdownMenuItem
                 className="cursor-pointer"
                 onClick={() =>
-                  updateInvoiceMutation.mutate({
+                  markAsUnpaidMutation.mutate({
                     id,
-                    status: "unpaid",
-                    paidAt: undefined,
                   })
                 }
               >
@@ -98,6 +129,7 @@ export function InvoiceActions({ status, id, companyId }: Props) {
                 size="sm"
                 variant="secondary"
                 className="flex items-center space-x-2 hover:bg-secondary w-full cursor-pointer"
+                disabled={sendReminderMutation.isPending || isSendingReminder}
               >
                 <Bell className="size-3.5" />
                 <span>Remind</span>
@@ -116,13 +148,10 @@ export function InvoiceActions({ status, id, companyId }: Props) {
                 </AlertDialogCancel>
                 <AlertDialogAction
                   className="cursor-pointer"
-                  onClick={() =>
-                    sendReminderMutation.mutate({
-                      id,
-                      date: new Date().toISOString(),
-                    })
-                  }
-                  disabled={sendReminderMutation.isPending}
+                  onClick={() => {
+                    handleSendReminder();
+                  }}
+                  disabled={sendReminderMutation.isPending || isSendingReminder}
                 >
                   Send Reminder
                 </AlertDialogAction>
@@ -153,7 +182,10 @@ export function InvoiceActions({ status, id, companyId }: Props) {
 
             <DropdownMenuContent sideOffset={10} align="end">
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="cursor-pointer">
+                <DropdownMenuSubTrigger
+                  className="cursor-pointer"
+                  disabled={isSendingPaid}
+                >
                   Mark as paid
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
@@ -162,31 +194,12 @@ export function InvoiceActions({ status, id, companyId }: Props) {
                     toDate={new Date()}
                     selected={new Date()}
                     onSelect={(date) => {
-                      if (date) {
-                        updateInvoiceMutation.mutate({
-                          id,
-                          status: "paid",
-                          paidAt: date.toISOString(),
-                        });
-                      } else {
-                        // NOTE: Today is undefined
-                        updateInvoiceMutation.mutate({
-                          id,
-                          status: "paid",
-                          paidAt: new Date().toISOString(),
-                        });
-                      }
+                      handleMarkAsPaid(date);
                     }}
                     initialFocus
                   />
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
-              <DropdownMenuItem
-                className="text-destructive cursor-pointer"
-                onClick={handleDeleteInvoice}
-              >
-                Delete
-              </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive cursor-pointer"
                 onClick={() =>

@@ -7,15 +7,17 @@ import { motion } from "motion/react";
 import { InvoiceSheetHeader } from "./InvoiceSheetHeader";
 import { FormatAmount } from "../common/FormatAmount";
 import { CopyInput } from "../ui/copy-input";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { OpenURL } from "../common/OpenUrl";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { downloadFileAction } from "@/actions/downloadFile";
 import { Id } from "../../../convex/_generated/dataModel";
 import { formatEditorContent } from "./public/format";
+import { useState } from "react";
 
 export function InvoiceSuccess() {
+  const [isDownloading, setIsDownloading] = useState(false);
   const { invoiceId, setParams } = useInvoiceParams();
 
   const invoice = useQuery(
@@ -24,10 +26,13 @@ export function InvoiceSuccess() {
   );
 
   const handleDownload = async (storageId?: Id<"_storage">) => {
+    setIsDownloading(true);
     const url = await downloadFileAction(storageId);
     if (url) {
       window.open(url, "_blank");
     }
+
+    setIsDownloading(false);
   };
 
   if (!invoice) {
@@ -151,9 +156,14 @@ export function InvoiceSuccess() {
                   variant="secondary"
                   className="size-[40px] hover:bg-secondary shrink-0 cursor-pointer"
                   onClick={() => handleDownload(invoice.storageId)}
+                  disabled={isDownloading}
                 >
                   <div>
-                    <Download className="size-4" />
+                    {isDownloading ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <Download className="size-4" />
+                    )}
                   </div>
                 </Button>
               </div>

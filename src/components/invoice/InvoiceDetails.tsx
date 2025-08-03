@@ -19,14 +19,16 @@ import { InvoiceStatus } from "./InvoiceStatus";
 import { InvoiceActivity } from "@/components/invoice/InvoiceActivity";
 import { OpenURL } from "@/components/common/OpenUrl";
 import { CopyInput } from "@/components/ui/copy-input";
-import { ArrowDown, ExternalLink } from "lucide-react";
+import { Download, ExternalLink, Loader2 } from "lucide-react";
 import { getWebsiteLogo } from "@/lib/invoice/logo";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { downloadFileAction } from "@/actions/downloadFile";
 import { Id } from "../../../convex/_generated/dataModel";
+import { useState } from "react";
 
 export function InvoiceDetails({ companyId }: { companyId: Id<"company"> }) {
+  const [isDownloading, setIsDownloading] = useState(false);
   const { invoiceId } = useInvoiceParams();
 
   const isOpen = invoiceId !== null;
@@ -75,10 +77,14 @@ export function InvoiceDetails({ companyId }: { companyId: Id<"company"> }) {
       return;
     }
 
+    setIsDownloading(true);
+
     const url = await downloadFileAction(data.storageId);
     if (url) {
       window.open(url, "_blank");
     }
+
+    setIsDownloading(false);
   };
 
   return (
@@ -219,9 +225,14 @@ export function InvoiceDetails({ companyId }: { companyId: Id<"company"> }) {
                   variant="secondary"
                   className="size-[38px] hover:bg-secondary shrink-0 cursor-pointer"
                   onClick={handleDownload}
+                  disabled={isDownloading}
                 >
                   <div>
-                    <ArrowDown className="size-4" />
+                    {isDownloading ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <Download className="size-4" />
+                    )}
                   </div>
                 </Button>
               )}

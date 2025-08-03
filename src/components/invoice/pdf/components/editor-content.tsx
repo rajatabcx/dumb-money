@@ -1,6 +1,6 @@
 import { View } from "@react-pdf/renderer";
 import { EditorDoc } from "@/lib/invoice/types";
-import { formatEditorContent } from "../../public/format";
+import { formatEditorContent } from "../format";
 
 type Props = {
   content?: EditorDoc | null;

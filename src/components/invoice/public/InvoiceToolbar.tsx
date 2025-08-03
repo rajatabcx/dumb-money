@@ -7,10 +7,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Copy, Download } from "lucide-react";
+import { Copy, Download, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useCopyToClipboard } from "usehooks-ts";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { useState } from "react";
 
 type Props = {
   token: string;
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export default function InvoiceToolbar({ storageId }: Props) {
+  const [isDownloading, setIsDownloading] = useState(false);
   const [, copy] = useCopyToClipboard();
 
   const handleCopyLink = () => {
@@ -27,14 +29,17 @@ export default function InvoiceToolbar({ storageId }: Props) {
   };
 
   const downloadFile = async () => {
+    console.log("downloading file", { storageId });
     if (!storageId) {
       return;
     }
 
+    setIsDownloading(true);
     const url = await downloadFileAction(storageId);
     if (url) {
       window.open(url, "_blank");
     }
+    setIsDownloading(false);
   };
 
   return (
@@ -52,8 +57,13 @@ export default function InvoiceToolbar({ storageId }: Props) {
               size="icon"
               className="rounded-full size-8 cursor-pointer"
               onClick={downloadFile}
+              disabled={isDownloading}
             >
-              <Download className="size-4" />
+              {isDownloading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Download className="size-4" />
+              )}
             </Button>
           </TooltipTrigger>
           <TooltipContent

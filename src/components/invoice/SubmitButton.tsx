@@ -63,6 +63,7 @@ export function SubmitButton({ isSubmitting, disabled, companyId }: Props) {
       <BaseSubmitButton
         isSubmitting={isSubmitting}
         disabled={!isValid || disabled}
+        className="cursor-pointer"
       >
         {options.find((o) => o.value === selectedOption)?.label}
       </BaseSubmitButton>

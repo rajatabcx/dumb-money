@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
+import { sendInvoicePaidEmail } from "@/actions/sendInvoicePaid";
+import { useState } from "react";
 
 type Props = {
   row: Invoice;
@@ -28,32 +30,14 @@ type Props = {
 };
 
 export function ActionsMenu({ row, companyId }: Props) {
+  const [isSendingPaid, setIsSendingPaid] = useState(false);
   const { setParams } = useInvoiceParams();
   const [, copy] = useCopyToClipboard();
 
   const deleteInvoiceMutation = useApiMutation(api.invoices.deleteInvoice);
 
   const updateInvoiceMutation = useApiMutation(api.invoices.updateInvoice);
-
-  //   trpc.invoice.duplicate.mutationOptions({
-  //     onSuccess: (data) => {
-  //       if (data) {
-  //         setParams({
-  //           invoiceId: data.id,
-  //           type: "edit",
-  //         });
-  //       }
-
-  //       queryClient.invalidateQueries({
-  //         queryKey: trpc.invoice.get.infiniteQueryKey(),
-  //       });
-
-  //       queryClient.invalidateQueries({
-  //         queryKey: trpc.invoice.get.queryKey(),
-  //       });
-  //     },
-  //   })
-  // );
+  const markAsUnpaidMutation = useApiMutation(api.invoices.markAsUnpaid);
 
   const handleCopyLink = async () => {
     copy(`${process.env.NEXT_PUBLIC_BASE_URL}/i/${row.token}`);
@@ -66,6 +50,26 @@ export function ActionsMenu({ row, companyId }: Props) {
     if (url) {
       window.open(url, "_blank");
     }
+  };
+
+  const handleMarkAsPaid = (date: Date | undefined) => {
+    setIsSendingPaid(true);
+    if (date) {
+      updateInvoiceMutation.mutate({
+        id: row.id,
+        status: "paid",
+        paidAt: date.toISOString(),
+      });
+    } else {
+      // NOTE: Today is undefined
+      updateInvoiceMutation.mutate({
+        id: row.id,
+        status: "paid",
+        paidAt: new Date().toISOString(),
+      });
+    }
+    sendInvoicePaidEmail(row.id);
+    setIsSendingPaid(false);
   };
 
   return (
@@ -122,10 +126,8 @@ export function ActionsMenu({ row, companyId }: Props) {
           {row.status === "paid" && (
             <DropdownMenuItem
               onClick={() =>
-                updateInvoiceMutation.mutate({
+                markAsUnpaidMutation.mutate({
                   id: row.id,
-                  status: "unpaid",
-                  paidAt: undefined,
                 })
               }
             >
@@ -136,7 +138,10 @@ export function ActionsMenu({ row, companyId }: Props) {
           {(row.status === "overdue" || row.status === "unpaid") && (
             <>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="cursor-pointer">
+                <DropdownMenuSubTrigger
+                  className="cursor-pointer"
+                  disabled={isSendingPaid}
+                >
                   Mark as paid
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
@@ -145,20 +150,7 @@ export function ActionsMenu({ row, companyId }: Props) {
                     toDate={new Date()}
                     selected={new Date()}
                     onSelect={(date) => {
-                      if (date) {
-                        updateInvoiceMutation.mutate({
-                          id: row.id,
-                          status: "paid",
-                          paidAt: date.toISOString(),
-                        });
-                      } else {
-                        // NOTE: Today is undefined
-                        updateInvoiceMutation.mutate({
-                          id: row.id,
-                          status: "paid",
-                          paidAt: new Date().toISOString(),
-                        });
-                      }
+                      handleMarkAsPaid(date);
                     }}
                     initialFocus
                   />

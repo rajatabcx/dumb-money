@@ -21,8 +21,10 @@ import { ExternalLink } from "lucide-react";
 import { Id } from "../../../convex/_generated/dataModel";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { api } from "../../../convex/_generated/api";
+import { generateInvoice } from "@/actions/generateInvoice";
 
 export function Form({ companyId }: { companyId: Id<"company"> }) {
+  const [isGenerating, setIsGenerating] = useState(false);
   const { invoiceId, setParams } = useInvoiceParams();
   const [lastUpdated, setLastUpdated] = useState<Date | undefined>();
   const [lastEditedText, setLastEditedText] = useState("");
@@ -133,6 +135,10 @@ export function Form({ companyId }: { companyId: Id<"company"> }) {
       deliveryType: values.template.deliveryType ?? "create",
     });
 
+    setIsGenerating(true);
+    await generateInvoice(invoiceId, values.template.deliveryType ?? "create");
+    setIsGenerating(false);
+
     setParams({ type: "success", invoiceId: res });
   };
 
@@ -215,9 +221,11 @@ export function Form({ companyId }: { companyId: Id<"company"> }) {
 
           <SubmitButton
             companyId={companyId}
-            isSubmitting={createInvoiceMutation.isPending}
+            isSubmitting={createInvoiceMutation.isPending || isGenerating}
             disabled={
-              createInvoiceMutation.isPending || draftInvoiceMutation.isPending
+              createInvoiceMutation.isPending ||
+              draftInvoiceMutation.isPending ||
+              isGenerating
             }
           />
         </div>

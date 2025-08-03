@@ -35,7 +35,7 @@ export async function PdfTemplate({
 
   if (template.includeQr) {
     qrCode = await QRCodeUtil.toDataURL(
-      `${process.env.NEXT_PUBLIC_APP_URL}/i/${token}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/i/${token}`,
       {
         margin: 0,
         width: 40 * 3,

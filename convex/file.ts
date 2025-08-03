@@ -15,3 +15,12 @@ export const getInvoiceDownloadUrl = query({
     return await ctx.storage.getUrl(args.id);
   },
 });
+
+export const deleteById = mutation({
+  args: {
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.storage.delete(args.storageId);
+  },
+});

@@ -33,13 +33,7 @@ export async function updateInvoiceHelper(
 ) {
   const { id, ...rest } = params;
 
-  const invoice = await ctx.db.get(id);
-  if (!invoice) {
-    throw new ConvexError("Invoice not found");
-  }
-
   return await ctx.db.patch(id, {
-    ...invoice,
     ...rest,
     updatedAt: new Date().toISOString(),
   });
@@ -470,6 +464,8 @@ export const getInvoice = query({
     const { id } = args;
     const invoice = await ctx.db.get(id);
 
+    const currentUser = await getCurrentUser(ctx);
+
     if (!invoice) {
       return null;
     }
@@ -477,9 +473,15 @@ export const getInvoice = query({
       ? await ctx.db.get(invoice.customerId)
       : null;
 
+    const company = invoice.companyId
+      ? await ctx.db.get(invoice.companyId)
+      : null;
+
     return {
       ...invoice,
       customer,
+      companyName: company?.name,
+      user: currentUser,
     };
   },
 });
@@ -559,8 +561,8 @@ export const upsertTemplate = mutation({
     return await ctx.db.patch(templateForCompany._id, {
       ...templateForCompany,
       ...template,
-      fromDetails: fromDetails,
-      paymentDetails: paymentDetails,
+      ...(fromDetails ? { fromDetails } : {}),
+      ...(paymentDetails ? { paymentDetails } : {}),
     });
   },
 });
@@ -704,17 +706,12 @@ export const create = mutation({
     deliveryType: v.union(v.literal("create"), v.literal("create_and_send")),
   },
   handler: async (ctx, args) => {
-    const { companyId, invoiceId, deliveryType } = args;
+    const { invoiceId } = args;
 
     await updateInvoiceHelper(ctx, {
       id: invoiceId,
       status: "unpaid",
     });
-
-    // await tasks.trigger("generate-invoice", {
-    //   invoiceId: data.id,
-    //   deliveryType: input.deliveryType,
-    // } satisfies GenerateInvoicePayload);
 
     return invoiceId;
   },
@@ -729,21 +726,41 @@ export const updateInvoice = mutation({
     paidAt: v.optional(v.string()),
     internalNote: v.optional(v.string()),
     storageId: v.optional(v.id("_storage")),
+    sentTo: v.optional(v.string()),
+    sentAt: v.optional(v.string()),
+    viewedAt: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { id, status, paidAt, internalNote, storageId } = args;
+    const {
+      id,
+      status,
+      paidAt,
+      internalNote,
+      storageId,
+      sentTo,
+      sentAt,
+      viewedAt,
+    } = args;
 
     const patch: {
       status?: "paid" | "canceled" | "unpaid";
       paidAt?: string;
       internalNote?: string;
       storageId?: Id<"_storage">;
+      sentTo?: string;
+      sentAt?: string;
+      viewedAt?: string;
     } = {};
 
     if (status !== undefined) patch.status = status;
     if (paidAt !== undefined) patch.paidAt = paidAt;
     if (internalNote !== undefined) patch.internalNote = internalNote;
     if (storageId !== undefined) patch.storageId = storageId;
+
+    if (sentTo !== undefined) patch.sentTo = sentTo;
+    if (sentAt !== undefined) patch.sentAt = sentAt;
+
+    if (viewedAt !== undefined) patch.viewedAt = viewedAt;
 
     return await updateInvoiceHelper(ctx, {
       id,
@@ -787,7 +804,7 @@ export const deleteInvoice = mutation({
     }
 
     if (invoice.status !== "draft" && invoice.status !== "canceled") {
-      throw new Error("Can only delete draft or canceled invoices");
+      throw new ConvexError("Can only delete draft or canceled invoices");
     }
 
     await ctx.db.delete(id);
@@ -846,5 +863,20 @@ export const getInvoiceByToken = query({
       customer,
       company,
     };
+  },
+});
+
+export const markAsUnpaid = mutation({
+  args: {
+    id: v.id("invoices"),
+  },
+  handler: async (ctx, args) => {
+    const { id } = args;
+
+    return await updateInvoiceHelper(ctx, {
+      id,
+      status: "unpaid",
+      paidAt: undefined,
+    });
   },
 });

@@ -77,7 +77,11 @@ export function FormContext({
       });
     } else if (type === "edit") {
       // If the invoice number is already set, don't reset the form
-      if (form.getValues("type") === "edit") return;
+      if (
+        form.getValues("type") === "edit" &&
+        form.getValues("invoiceNumber") === data?.invoiceNumber
+      )
+        return;
 
       // If the data or default settings are not available, don't reset the form
       if (!data || !defaultSettings) return;
