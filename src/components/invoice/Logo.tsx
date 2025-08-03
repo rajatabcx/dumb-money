@@ -25,7 +25,6 @@ export function Logo({ companyId }: Props) {
     if (file) {
       try {
         const fileUploadUrl = await uploadUrl.mutate();
-
         const response = await fetch(fileUploadUrl, {
           method: "POST",
           headers: { "Content-Type": file.type },

@@ -76,8 +76,6 @@ type Props = {
 export default async function Page(props: Props) {
   const user = await currentUser();
   const params = await props.params;
-  const searchParams = await props.searchParams;
-  const viewer = decodeURIComponent(searchParams?.viewer as string);
 
   const authToken = await getAuthToken();
   const invoice = await fetchQuery(

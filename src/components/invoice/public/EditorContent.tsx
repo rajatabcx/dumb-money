@@ -1,5 +1,5 @@
 import { EditorDoc } from "@/lib/invoice/types";
-import { formatEditorContent } from "../pdf/format";
+import { formatEditorContent } from "./format";
 
 type Props = {
   content?: EditorDoc | null;

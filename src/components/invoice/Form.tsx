@@ -125,11 +125,14 @@ export function Form({ companyId }: { companyId: Id<"company"> }) {
 
   // Submit the form and the draft invoice
   const handleSubmit = async (values: InvoiceFormValues) => {
+    if (!invoiceId) return;
+
     const res = await createInvoiceMutation.mutate({
-      companyId: companyId,
-      invoiceId: values.id as Id<"invoices">,
+      companyId,
+      invoiceId,
       deliveryType: values.template.deliveryType ?? "create",
     });
+
     setParams({ type: "success", invoiceId: res });
   };
 
@@ -191,7 +194,7 @@ export function Form({ companyId }: { companyId: Id<"company"> }) {
               <>
                 <OpenURL
                   href={`${process.env.NEXT_PUBLIC_BASE_URL}/i/${token}`}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 cursor-pointer"
                 >
                   <ExternalLink className="size-3" />
                   <span>Preview invoice</span>

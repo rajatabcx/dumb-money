@@ -150,6 +150,7 @@ export default defineSchema({
     scheduledAt: v.optional(v.string()), // timestamp in milliseconds
     scheduledJobId: v.optional(v.string()),
   })
+    .index("by_invoice_id", ["id"])
     .index("by_company", ["companyId"])
     .index("by_customer", ["customerId"])
     .index("by_user", ["userId"])

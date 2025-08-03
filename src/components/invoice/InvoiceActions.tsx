@@ -38,7 +38,7 @@ type Props = {
 export function InvoiceActions({ status, id, companyId }: Props) {
   const { setParams } = useInvoiceParams();
 
-  const updateInvoiceMutation = useApiMutation(api.invoices.update);
+  const updateInvoiceMutation = useApiMutation(api.invoices.updateInvoice);
 
   const deleteInvoiceMutation = useApiMutation(api.invoices.deleteInvoice);
 
@@ -59,13 +59,14 @@ export function InvoiceActions({ status, id, companyId }: Props) {
               <Button
                 size="icon"
                 variant="secondary"
-                className="hover:bg-secondary cursor-pointer cursor-pointer"
+                className="hover:bg-secondary cursor-pointer"
               >
                 <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent sideOffset={10} align="end">
               <DropdownMenuItem
+                className="cursor-pointer"
                 onClick={() =>
                   updateInvoiceMutation.mutate({
                     id,
@@ -77,7 +78,7 @@ export function InvoiceActions({ status, id, companyId }: Props) {
                 Mark as unpaid
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-destructive"
+                className="text-destructive cursor-pointer"
                 onClick={handleDeleteInvoice}
               >
                 Delete
@@ -96,7 +97,7 @@ export function InvoiceActions({ status, id, companyId }: Props) {
               <Button
                 size="sm"
                 variant="secondary"
-                className="flex items-center space-x-2 hover:bg-secondary w-full"
+                className="flex items-center space-x-2 hover:bg-secondary w-full cursor-pointer"
               >
                 <Bell className="size-3.5" />
                 <span>Remind</span>
@@ -110,8 +111,11 @@ export function InvoiceActions({ status, id, companyId }: Props) {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel className="cursor-pointer">
+                  Cancel
+                </AlertDialogCancel>
                 <AlertDialogAction
+                  className="cursor-pointer"
                   onClick={() =>
                     sendReminderMutation.mutate({
                       id,
@@ -141,7 +145,7 @@ export function InvoiceActions({ status, id, companyId }: Props) {
               <Button
                 size="sm"
                 variant="secondary"
-                className="hover:bg-secondary cursor-pointer cursor-pointer"
+                className="hover:bg-secondary cursor-pointer"
               >
                 <MoreHorizontal className="size-4" />
               </Button>
@@ -149,7 +153,9 @@ export function InvoiceActions({ status, id, companyId }: Props) {
 
             <DropdownMenuContent sideOffset={10} align="end">
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Mark as paid</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger className="cursor-pointer">
+                  Mark as paid
+                </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <Calendar
                     mode="single"
@@ -176,13 +182,13 @@ export function InvoiceActions({ status, id, companyId }: Props) {
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuItem
-                className="text-destructive"
+                className="text-destructive cursor-pointer"
                 onClick={handleDeleteInvoice}
               >
                 Delete
               </DropdownMenuItem>
               <DropdownMenuItem
-                className="text-destructive"
+                className="text-destructive cursor-pointer"
                 onClick={() =>
                   updateInvoiceMutation.mutate({
                     id,

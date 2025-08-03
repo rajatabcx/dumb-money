@@ -5,6 +5,7 @@ import {
   generateToken,
   getInvoiceTemplate,
   getNextInvoiceNumber,
+  verify,
 } from "./invoiceHelper";
 import { getCurrentUser } from "./useHelper";
 import { UTCDate } from "@date-fns/utc";
@@ -396,6 +397,8 @@ export const defaultSettings = query({
       invoiceNoLabel:
         template?.invoiceNoLabel ?? defaultTemplate.invoiceNoLabel,
       subtotalLabel: template?.subtotalLabel ?? defaultTemplate.subtotalLabel,
+      totalSummaryLabel:
+        template?.totalSummaryLabel ?? defaultTemplate.totalSummaryLabel,
       issueDateLabel:
         template?.issueDateLabel ?? defaultTemplate.issueDateLabel,
       dueDateLabel: template?.dueDateLabel ?? defaultTemplate.dueDateLabel,
@@ -813,9 +816,17 @@ export const getInvoiceByToken = query({
   handler: async (ctx, args) => {
     const { token } = args;
 
+    const { id } = (await verify(decodeURIComponent(token))) as {
+      id: string;
+    };
+
+    if (!id) {
+      return null;
+    }
+
     const invoice = await ctx.db
       .query("invoices")
-      .withIndex("by_token", (q) => q.eq("token", token))
+      .withIndex("by_invoice_id", (q) => q.eq("id", id))
       .first();
 
     if (!invoice) {

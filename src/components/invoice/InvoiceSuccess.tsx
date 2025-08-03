@@ -13,6 +13,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { downloadFileAction } from "@/actions/downloadFile";
 import { Id } from "../../../convex/_generated/dataModel";
+import { formatEditorContent } from "./public/format";
 
 export function InvoiceSuccess() {
   const { invoiceId, setParams } = useInvoiceParams();
@@ -94,7 +95,6 @@ export function InvoiceSuccess() {
               {invoice.template.customerLabel}
             </span>
             <div className="font-mono text-muted-foreground">
-              {/* @ts-expect-error - customerDetails is JSONB */}
               {formatEditorContent(invoice.customerDetails)}
             </div>
           </motion.div>
@@ -143,13 +143,13 @@ export function InvoiceSuccess() {
               <div className="flex w-full gap-2 mt-1">
                 <div className="flex-1 min-w-0">
                   <CopyInput
-                    value={`${process.env.NEXT_PUBLIC_APP_URL}/i/${invoice.token}`}
+                    value={`${process.env.NEXT_PUBLIC_BASE_URL}/i/${invoice.token}`}
                   />
                 </div>
 
                 <Button
                   variant="secondary"
-                  className="size-[40px] hover:bg-secondary shrink-0"
+                  className="size-[40px] hover:bg-secondary shrink-0 cursor-pointer"
                   onClick={() => handleDownload(invoice.storageId)}
                 >
                   <div>
@@ -177,8 +177,13 @@ export function InvoiceSuccess() {
       </div>
 
       <div className="flex mt-auto absolute bottom-6 justify-end gap-4 right-6 left-6">
-        <OpenURL href={`${process.env.NEXT_PUBLIC_APP_URL}/i/${invoice.token}`}>
-          <Button variant="secondary">View invoice</Button>
+        <OpenURL
+          href={`${process.env.NEXT_PUBLIC_BASE_URL}/i/${invoice.token}`}
+          className="cursor-pointer"
+        >
+          <Button variant="secondary" className="cursor-pointer">
+            View invoice
+          </Button>
         </OpenURL>
 
         <Button
@@ -189,6 +194,7 @@ export function InvoiceSuccess() {
               setParams({ type: "create" });
             }, 600);
           }}
+          className="cursor-pointer"
         >
           Create another
         </Button>

@@ -72,7 +72,7 @@ export function ActionsMenu({ row, companyId }: Props) {
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="relative">
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
             <EllipsisVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -86,12 +86,13 @@ export function ActionsMenu({ row, companyId }: Props) {
                   type: "edit",
                 })
               }
+              className="cursor-pointer"
             >
               Edit invoice
             </DropdownMenuItem>
           )}
 
-          <DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">
             <OpenURL
               href={`${process.env.NEXT_PUBLIC_BASE_URL}/i/${row.token}`}
             >
@@ -99,12 +100,15 @@ export function ActionsMenu({ row, companyId }: Props) {
             </OpenURL>
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={handleCopyLink}>
+          <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
             Copy link
           </DropdownMenuItem>
 
           {row.status !== "draft" && (
-            <DropdownMenuItem onClick={handleDownload}>
+            <DropdownMenuItem
+              onClick={handleDownload}
+              className="cursor-pointer"
+            >
               Download
             </DropdownMenuItem>
           )}
@@ -132,7 +136,9 @@ export function ActionsMenu({ row, companyId }: Props) {
           {(row.status === "overdue" || row.status === "unpaid") && (
             <>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Mark as paid</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger className="cursor-pointer">
+                  Mark as paid
+                </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <Calendar
                     mode="single"
@@ -166,7 +172,7 @@ export function ActionsMenu({ row, companyId }: Props) {
                     status: "canceled",
                   })
                 }
-                className="text-destructive"
+                className="text-destructive cursor-pointer"
               >
                 Cancel
               </DropdownMenuItem>
@@ -181,7 +187,7 @@ export function ActionsMenu({ row, companyId }: Props) {
                   companyId: row.companyId,
                 })
               }
-              className="text-destructive"
+              className="text-destructive cursor-pointer"
             >
               Delete
             </DropdownMenuItem>
@@ -195,7 +201,7 @@ export function ActionsMenu({ row, companyId }: Props) {
                   companyId: row.companyId,
                 })
               }
-              className="text-destructive"
+              className="text-destructive cursor-pointer"
             >
               Delete
             </DropdownMenuItem>

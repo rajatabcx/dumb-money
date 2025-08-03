@@ -49,7 +49,11 @@ export function CountrySelector({ defaultValue, onSelect }: Props) {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[225px] p-0" align="start" portal={false}>
+      <PopoverContent
+        className="PopoverContent p-0"
+        align="start"
+        portal={false}
+      >
         <Command loop>
           <CommandInput
             placeholder="Search country..."

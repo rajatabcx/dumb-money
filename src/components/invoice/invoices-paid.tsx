@@ -23,7 +23,7 @@ export function InvoicesPaid({ companyId }: { companyId: Id<"company"> }) {
           statuses: ["paid"],
         })
       }
-      className="hidden sm:block text-left"
+      className="hidden sm:block text-left cursor-pointer"
     >
       <InvoiceSummary
         data={data ?? []}

@@ -15,6 +15,8 @@ import {
 } from "@tanstack/react-table";
 import React, { use, useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { InvoiceSkeleton } from "@/components/invoice/Skeleton";
+
 import { columns } from "./Columns";
 import { NoResults } from "./EmptyStates";
 import { EmptyState } from "./EmptyStates";
@@ -97,6 +99,10 @@ export function DataTable({
   useEffect(() => {
     setColumns(table.getAllLeafColumns());
   }, [columnVisibility]);
+
+  if (status === "LoadingFirstPage") {
+    return <InvoiceSkeleton />;
+  }
 
   if (hasFilters && !tableData?.length) {
     return <NoResults />;

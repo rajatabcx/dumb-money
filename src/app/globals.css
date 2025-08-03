@@ -212,3 +212,26 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+.PopoverContent {
+  width: var(--radix-popover-trigger-width);
+  max-height: var(--radix-popover-content-available-height);
+}
+
+.dark .dotted-bg {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    #232323 0.5px,
+    transparent 0
+  );
+  background-size: 6px 6px;
+}
+
+.light .dotted-bg {
+  background-size: 6px 6px;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    #e0e0e0 0.5px,
+    transparent 0
+  );
+}

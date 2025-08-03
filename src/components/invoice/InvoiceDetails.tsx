@@ -103,7 +103,6 @@ export function InvoiceDetails({ companyId }: { companyId: Id<"company"> }) {
         </div>
         <InvoiceStatus status={status} />
       </div>
-
       <div className="flex justify-between items-center mt-6 mb-3 relative">
         <div className="flex flex-col w-full space-y-1">
           <span
@@ -133,7 +132,6 @@ export function InvoiceDetails({ companyId }: { companyId: Id<"company"> }) {
           </div>
         </div>
       </div>
-
       <InvoiceActions status={status} id={id} companyId={companyId} />
 
       <div className="h-full p-0 pb-[143px] overflow-y-auto scrollbar-hide">
@@ -219,7 +217,7 @@ export function InvoiceDetails({ companyId }: { companyId: Id<"company"> }) {
               {status !== "draft" && (
                 <Button
                   variant="secondary"
-                  className="size-[38px] hover:bg-secondary shrink-0"
+                  className="size-[38px] hover:bg-secondary shrink-0 cursor-pointer"
                   onClick={handleDownload}
                 >
                   <div>

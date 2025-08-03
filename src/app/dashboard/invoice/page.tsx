@@ -6,7 +6,6 @@ import { InvoicesOpen } from "@/components/invoice/invoices-open";
 import { InvoicesOverdue } from "@/components/invoice/invoices-overdue";
 import { InvoicesPaid } from "@/components/invoice/invoices-paid";
 import { InvoiceSummarySkeleton } from "@/components/invoice/InvoiceSummary";
-import { InvoiceSkeleton } from "@/components/invoice/Skeleton";
 import { getAuthToken } from "@/lib/auth";
 import { fetchQuery } from "convex/nextjs";
 import type { Metadata } from "next";
@@ -51,12 +50,10 @@ export default async function Page(props: Props) {
       <InvoiceHeader companyId={user.companyId} />
 
       <ErrorBoundary errorComponent={ErrorFallback}>
-        <Suspense fallback={<InvoiceSkeleton />}>
-          <DataTable
-            columnVisibility={columnVisibility}
-            companyId={user.companyId}
-          />
-        </Suspense>
+        <DataTable
+          columnVisibility={columnVisibility}
+          companyId={user.companyId}
+        />
       </ErrorBoundary>
     </div>
   );

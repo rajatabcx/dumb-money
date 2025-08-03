@@ -146,7 +146,7 @@ export function CreateCompanyForm({
         />
 
         <SubmitButton
-          className="mt-6 w-full"
+          className="mt-6 w-full cursor-pointer"
           type="submit"
           isSubmitting={isCreatingTeam || isOnboardingUser}
         >

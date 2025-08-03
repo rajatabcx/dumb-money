@@ -34,6 +34,7 @@ export const invoiceFormSchema = z.object({
   amount: z.number(),
   lineItems: z.array(lineItemSchema).min(1),
   token: z.string().optional(),
+  type: z.enum(["create", "edit"]).optional(),
 });
 
 export type InvoiceFormValues = z.infer<typeof invoiceFormSchema>;
@@ -60,19 +61,39 @@ export function FormContext({
   });
 
   useEffect(() => {
-    if (!!form.getValues("invoiceNumber") && type === "create") {
-      return;
-    }
+    if (type === "create") {
+      // If the invoice number is already set, don't reset the form
+      if (form.getValues("type") === "create") return;
+      form.reset({
+        ...(defaultSettings ?? {}),
+        ...(data ?? {}),
+        template: {
+          ...(defaultSettings?.template ?? {}),
+          ...(data?.template ?? {}),
+        },
+        customerId:
+          data?.customerId ?? defaultSettings?.customerId ?? undefined,
+        type: "create",
+      });
+    } else if (type === "edit") {
+      // If the invoice number is already set, don't reset the form
+      if (form.getValues("type") === "edit") return;
 
-    form.reset({
-      ...(defaultSettings ?? {}),
-      ...(data ?? {}),
-      template: {
-        ...(defaultSettings?.template ?? {}),
-        ...(data?.template ?? {}),
-      },
-      customerId: data?.customerId ?? defaultSettings?.customerId ?? undefined,
-    });
+      // If the data or default settings are not available, don't reset the form
+      if (!data || !defaultSettings) return;
+
+      form.reset({
+        ...(defaultSettings ?? {}),
+        ...(data ?? {}),
+        template: {
+          ...(defaultSettings?.template ?? {}),
+          ...(data?.template ?? {}),
+        },
+        customerId:
+          data?.customerId ?? defaultSettings?.customerId ?? undefined,
+        type: "edit",
+      });
+    }
   }, [data, defaultSettings, form, type]);
 
   return <FormProvider {...form}>{children}</FormProvider>;

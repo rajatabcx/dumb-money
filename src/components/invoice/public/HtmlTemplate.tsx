@@ -1,11 +1,11 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { EditorContent } from "@/components/invoice/public/EditorContent";
-import { LineItems } from "@/components/invoice/public/LineItems";
 import { Logo } from "@/components/invoice/public/Logo";
 import { Meta } from "@/components/invoice/public/Meta";
 import { Summary } from "@/components/invoice/public/Summary";
 import { FunctionReturnType } from "convex/server";
 import { api } from "../../../../convex/_generated/api";
+import { LineItems } from "./LineItems";
 
 type Props = {
   data: FunctionReturnType<typeof api.invoices.getInvoiceByToken>;
@@ -113,20 +113,22 @@ export function HtmlTemplate({ data, width, height }: Props) {
 
         <div className="flex flex-col space-y-6 md:space-y-8 mt-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            <div>
-              <p className="text-[11px] text-[#878787] font-mono mb-2 block">
-                {template.paymentLabel}
-              </p>
-              <EditorContent content={paymentDetails} />
-            </div>
-            {noteDetails && (
+            {paymentDetails ? (
+              <div>
+                <p className="text-[11px] text-[#878787] font-mono mb-2 block">
+                  {template.paymentLabel}
+                </p>
+                <EditorContent content={paymentDetails} />
+              </div>
+            ) : null}
+            {noteDetails ? (
               <div className="mt-4 md:mt-0">
                 <p className="text-[11px] text-[#878787] font-mono mb-2 block">
                   {template.noteLabel}
                 </p>
                 <EditorContent content={noteDetails} />
               </div>
-            )}
+            ) : null}
           </div>
 
           <EditorContent content={bottomBlock} />

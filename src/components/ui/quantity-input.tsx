@@ -59,7 +59,7 @@ export function QuantityInput({
     >
       <button
         aria-label="Decrease"
-        className="flex items-center pr-[.325em]"
+        className="flex items-center pr-[.325em] cursor-pointer"
         disabled={value <= min}
         onPointerDown={handlePointerDown(-1)}
         type="button"
@@ -91,7 +91,7 @@ export function QuantityInput({
       </div>
       <button
         aria-label="Increase"
-        className="flex items-center pl-[.325em]"
+        className="flex items-center pl-[.325em] cursor-pointer"
         disabled={value >= max}
         onPointerDown={handlePointerDown(1)}
         type="button"

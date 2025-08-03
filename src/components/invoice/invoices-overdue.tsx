@@ -23,7 +23,7 @@ export function InvoicesOverdue({ companyId }: { companyId: Id<"company"> }) {
           statuses: ["overdue"],
         })
       }
-      className="hidden sm:block text-left"
+      className="hidden sm:block text-left cursor-pointer"
     >
       <InvoiceSummary
         data={data ?? []}

@@ -212,11 +212,11 @@ export function Summary({ companyId }: { companyId: Id<"company"> }) {
 
       <div className="flex justify-between items-center py-4 mt-2 border-t border-border">
         <LabelInput
-          name="template.totalSummaryLabel"
+          name="template.totalLabel"
           onSave={(value) => {
             updateTemplateMutation.mutate({
               companyId,
-              template: { totalSummaryLabel: value },
+              template: { totalLabel: value },
             });
           }}
         />
