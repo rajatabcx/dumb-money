@@ -23,9 +23,9 @@ import { api } from "../../../convex/_generated/api";
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
   { href: storefrontRoute(), label: "Home", active: true },
-  { href: "#", label: "Features" },
-  { href: "#", label: "Pricing" },
-  { href: "#", label: "About" },
+  // { href: "#", label: "Features" },
+  // { href: "#", label: "Pricing" },
+  // { href: "#", label: "About" },
 ];
 
 export function Header({ isSignedIn }: { isSignedIn: boolean }) {
