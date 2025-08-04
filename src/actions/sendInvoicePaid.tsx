@@ -49,13 +49,13 @@ export const sendInvoicePaidEmail = async (invoiceId: Id<"invoices">) => {
   });
 
   if (response.error) {
-    console.error("Invoice reminder email failed to send", {
+    console.error("Invoice paid email failed to send", {
       invoiceId,
       error: response.error,
     });
 
-    throw new Error("Invoice reminder email failed to send");
+    throw new Error("Invoice paid email failed to send");
   }
 
-  console.log("Invoice reminder email sent");
+  console.log("Invoice paid email sent");
 };
