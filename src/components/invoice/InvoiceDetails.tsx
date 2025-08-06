@@ -242,17 +242,21 @@ export function InvoiceDetails({ companyId }: { companyId: Id<"company"> }) {
 
         <Accordion
           type="multiple"
-          className="mt-6"
+          className="my-6"
           defaultValue={internalNote ? ["note", "activity"] : ["activity"]}
         >
           <AccordionItem value="activity">
-            <AccordionTrigger>Activity</AccordionTrigger>
+            <AccordionTrigger className="cursor-pointer">
+              Activity
+            </AccordionTrigger>
             <AccordionContent>
               <InvoiceActivity data={data} />
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="note">
-            <AccordionTrigger>Internal note</AccordionTrigger>
+            <AccordionTrigger className="cursor-pointer">
+              Internal note
+            </AccordionTrigger>
             <AccordionContent>
               <InvoiceNote id={data._id} defaultValue={internalNote} />
             </AccordionContent>

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { MoveLeft, MoveRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface HorizontalPaginationProps {
   canScrollLeft: boolean;
@@ -25,20 +25,20 @@ export function HorizontalPagination({
         variant="outline"
         size="sm"
         disabled={!canScrollLeft}
-        className="size-6 p-0"
+        className="size-6 p-0 cursor-pointer"
         onClick={onScrollLeft}
       >
-        <MoveLeft className={cn("size-3.5", canScrollLeft && "text-primary")} />
+        <ArrowLeft className={cn("size-4", canScrollLeft && "text-primary")} />
       </Button>
       <Button
         variant="outline"
         size="sm"
         disabled={!canScrollRight}
-        className="size-6 p-0"
+        className="size-6 p-0 cursor-pointer"
         onClick={onScrollRight}
       >
-        <MoveRight
-          className={cn("size-3.5", canScrollRight && "text-primary")}
+        <ArrowRight
+          className={cn("size-4", canScrollRight && "text-primary")}
         />
       </Button>
     </div>

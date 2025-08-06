@@ -119,7 +119,6 @@ export default async function Page(props: Props) {
 
   const width = invoice.template.size === "letter" ? 750 : 595;
   const height = invoice.template.size === "letter" ? 1056 : 842;
-  console.log("invoice", invoice);
 
   return (
     <>

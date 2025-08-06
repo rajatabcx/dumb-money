@@ -46,13 +46,16 @@ function ActivityItem({
             {label}
           </span>
 
-          <span className="text-sm text-muted-foreground">
-            {date &&
-              format(
-                new Date(date),
-                `MMM d, ${timeFormat === 24 ? "HH:mm" : "h:mm a"}`
-              )}
-          </span>
+          {date ? (
+            <span className="text-sm text-muted-foreground">
+              {label === "Paid"
+                ? format(new Date(date), `MMM d`)
+                : format(
+                    new Date(date),
+                    `MMM d, ${timeFormat === 24 ? "HH:mm" : "h:mm a"}`
+                  )}
+            </span>
+          ) : null}
         </div>
       </div>
     </li>
