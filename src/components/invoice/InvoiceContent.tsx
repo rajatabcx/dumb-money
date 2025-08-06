@@ -8,7 +8,13 @@ import { SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useFormContext } from "react-hook-form";
 import { Id } from "../../../convex/_generated/dataModel";
 
-export function InvoiceContent({ companyId }: { companyId: Id<"company"> }) {
+export function InvoiceContent({
+  companyId,
+  invoiceId,
+}: {
+  companyId: Id<"company">;
+  invoiceId: Id<"invoices"> | null;
+}) {
   const { type } = useInvoiceParams();
   const { watch } = useFormContext();
   const templateSize = watch("template.size");

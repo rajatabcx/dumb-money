@@ -115,7 +115,10 @@ export function DataTable({
   return (
     <div className="w-full">
       <div
-        ref={tableScroll.containerRef}
+        ref={(el) => {
+          tableScroll.containerRef.current = el;
+          tableScroll.setIsRefsReady(true);
+        }}
         className="overflow-x-auto overscroll-x-none md:border-l md:border-r border-border scrollbar-hide"
       >
         <Table>

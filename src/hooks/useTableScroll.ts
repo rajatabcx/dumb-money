@@ -10,6 +10,7 @@ interface UseTableScrollOptions {
 }
 
 export function useTableScroll(options: UseTableScrollOptions = {}) {
+  const [isRefsReady, setIsRefsReady] = useState(false);
   const {
     scrollAmount = 120,
     useColumnWidths = false,
@@ -264,7 +265,7 @@ export function useTableScroll(options: UseTableScrollOptions = {}) {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !isRefsReady) return;
 
     // Reset column index and check scrollability on mount and resize
     currentColumnIndex.current = startFromColumn;
@@ -312,7 +313,7 @@ export function useTableScroll(options: UseTableScrollOptions = {}) {
         clearTimeout(scrollTimeoutRef.current);
       }
     };
-  }, [checkScrollability, startFromColumn]);
+  }, [checkScrollability, startFromColumn, isRefsReady]);
 
   useHotkeys(
     "ArrowLeft, ArrowRight",
@@ -337,5 +338,6 @@ export function useTableScroll(options: UseTableScrollOptions = {}) {
     isScrollable,
     scrollLeft,
     scrollRight,
+    setIsRefsReady,
   };
 }

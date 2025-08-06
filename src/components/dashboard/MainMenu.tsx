@@ -30,33 +30,6 @@ const icons = {
 } as const;
 
 const items = [
-  // {
-  //   path: "/",
-  //   name: "Overview",
-  // },
-  // {
-  //   path: "/inbox",
-  //   name: "Inbox",
-  // },
-  // {
-  //   path: "/transactions",
-  //   name: "Transactions",
-  //   children: [
-  //     {
-  //       path: "/transactions/categories",
-  //       name: "Categories",
-  //     },
-  //     {
-  //       path: "/transactions?step=connect",
-  //       name: "Connect bank",
-  //     },
-  //     {
-  //       path: "/transactions?step=import&hide=true",
-  //       name: "Import",
-  //     },
-  //     { path: "/transactions?createTransaction=true", name: "Create new" },
-  //   ],
-  // },
   {
     path: invoiceRoute(),
     name: "Invoices",
@@ -68,40 +41,11 @@ const items = [
       { path: `${invoiceRoute()}?type=create`, name: "Create new" },
     ],
   },
-  // {
-  //   path: "/tracker",
-  //   name: "Tracker",
-  //   children: [{ path: "/tracker?create=true", name: "Create new" }],
-  // },
-  // {
-  //   path: "/customers",
-  //   name: "Customers",
-  //   children: [{ path: "/customers?createCustomer=true", name: "Create new" }],
-  // },
-  // {
-  //   path: "/vault",
-  //   name: "Vault",
-  // },
-  // {
-  //   path: "/apps",
-  //   name: "Apps",
-  //   children: [
-  //     { path: "/apps", name: "All" },
-  //     { path: "/apps?tab=installed", name: "Installed" },
-  //   ],
-  // },
-  // {
-  //   path: "/settings",
-  //   name: "Settings",
-  //   children: [
-  //     { path: "/settings", name: "General" },
-  //     { path: "/settings/billing", name: "Billing" },
-  //     { path: "/settings/accounts", name: "Bank Connections" },
-  //     { path: "/settings/members", name: "Members" },
-  //     { path: "/settings/notifications", name: "Notifications" },
-  //     { path: "/settings/developer", name: "Developer" },
-  //   ],
-  // },
+  {
+    path: "/customers",
+    name: "Customers",
+    children: [{ path: "/customers?createCustomer=true", name: "Create new" }],
+  },
 ];
 
 interface ItemProps {

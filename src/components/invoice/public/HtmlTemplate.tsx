@@ -100,7 +100,7 @@ export function HtmlTemplate({ data, width, height }: Props) {
             currency={currency ?? null}
             vatLabel={template.vatLabel}
             taxLabel={template.taxLabel}
-            totalLabel={template.totalSummaryLabel}
+            totalLabel={template.totalLabel}
             lineItems={lineItems}
             includeDiscount={template.includeDiscount}
             discountLabel={template.discountLabel}
